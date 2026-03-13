@@ -63,6 +63,13 @@ jobs:
       - name: Copy env
         run: cp .env.example .env
 
+      - name: Prepare storage
+        run: |
+          mkdir -p storage/framework/views
+          mkdir -p storage/framework/cache
+          mkdir -p storage/framework/sessions
+          mkdir -p storage/logs
+
       - name: Generate key
         run: php artisan key:generate
 
