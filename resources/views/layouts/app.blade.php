@@ -40,14 +40,14 @@
     <script src="https://cdn.jsdelivr.net/npm/laravel-echo@1/dist/echo.iife.js"></script>
     @auth
     <script>
-        window.Echo = new Echo({
-            broadcaster: 'reverb',
-            key: '{{ config("reverb.apps.apps.0.key", config("broadcasting.connections.reverb.key", "sandbox-key")) }}',
-            wsHost: window.location.hostname,
-            wsPort: {{ config('reverb.servers.reverb.port', 8080) }},
-            forceTLS: false,
-            enabledTransports: ['ws'],
-        });
+window.Echo = new Echo({
+    broadcaster: 'reverb',
+    key: '{{ config("broadcasting.connections.reverb.key", "sandbox-key") }}',
+    wsHost: window.location.hostname,
+    wsPort: window.location.protocol === 'https:' ? 443 : {{ config('reverb.servers.reverb.port', 8080) }},
+    forceTLS: window.location.protocol === 'https:',
+    enabledTransports: ['ws', 'wss'],
+});
     </script>
     @endauth
     @stack('scripts')

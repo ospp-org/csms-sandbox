@@ -47,14 +47,12 @@ CMD ["/entrypoint.sh"]
 FROM development AS production
 
 RUN composer install --no-dev --no-interaction --optimize-autoloader --no-scripts \
-    && php artisan config:cache \
-    && php artisan route:cache \
-    && php artisan view:cache
+    && php artisan route:cache 
 
 COPY docker/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-USER www-data
+RUN chown -R www-data:www-data storage bootstrap/cache
 EXPOSE 9000
 
 CMD ["/entrypoint.sh"]

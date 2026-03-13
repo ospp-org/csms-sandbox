@@ -14,6 +14,7 @@ php artisan migrate --force 2>/dev/null || true
 
 echo "[entrypoint] Checking JWT keys..."
 mkdir -p storage/keys
+mkdir -p storage/framework/views storage/framework/cache storage/framework/sessions storage/logs
 if [ ! -f storage/keys/jwt-private.pem ]; then
   echo "[entrypoint] Generating ECDSA P-256 JWT keys..."
   php artisan jwt:generate-keys 2>/dev/null || {

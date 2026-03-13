@@ -7,6 +7,8 @@ namespace App\Services;
 use App\Contracts\OsppHandler;
 use App\Dto\HandlerContext;
 use App\Dto\HandlerResult;
+use App\Events\MessageReceived;
+use App\Events\MessageSent;
 use App\Handlers\BootNotificationHandler;
 use App\Handlers\CancelReservationResponseHandler;
 use App\Handlers\CertificateInstallResponseHandler;
@@ -101,7 +103,7 @@ final class MqttMessageDispatcher
 
         $processingTimeMs = (int) ((microtime(true) - $startTime) * 1000);
 
-        $this->messageLog->logInbound(
+        $inboundLog = $this->messageLog->logInbound(
             tenantId: $tenantId,
             stationId: $stationId,
             action: $action,
@@ -112,6 +114,18 @@ final class MqttMessageDispatcher
             validationErrors: $schemaValid ? null : $validationErrors,
             processingTimeMs: $processingTimeMs,
         );
+
+        broadcast(new MessageReceived($stationId, [
+            'id' => $inboundLog->id,
+            'direction' => 'inbound',
+            'action' => $action,
+            'message_id' => $messageId,
+            'message_type' => $messageType,
+            'payload' => $envelope,
+            'schema_valid' => $schemaValid,
+            'validation_errors' => $schemaValid ? null : $validationErrors,
+            'created_at' => (string) $inboundLog->created_at,
+        ]));
 
         $context = new HandlerContext(
             tenantId: $tenantId,
@@ -201,13 +215,25 @@ final class MqttMessageDispatcher
 
         $station = TenantStation::where('station_id', $stationId)->first();
         if ($station !== null) {
-            $this->messageLog->logOutbound(
+            $outboundLog = $this->messageLog->logOutbound(
                 tenantId: $station->tenant_id,
                 stationId: $stationId,
                 action: $action,
                 messageId: $messageId,
                 payload: $responseEnvelope,
             );
+
+            broadcast(new MessageSent($stationId, [
+                'id' => $outboundLog->id,
+                'direction' => 'outbound',
+                'action' => $action,
+                'message_id' => $messageId,
+                'message_type' => 'Response',
+                'payload' => $responseEnvelope,
+                'schema_valid' => true,
+                'validation_errors' => null,
+                'created_at' => (string) $outboundLog->created_at,
+            ]));
         }
     }
 
