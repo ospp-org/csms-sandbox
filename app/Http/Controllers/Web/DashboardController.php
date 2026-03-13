@@ -10,10 +10,12 @@ use App\Models\Tenant;
 use App\Services\CommandService;
 use App\Services\ConformanceService;
 use App\Services\MqttCredentialService;
+use App\Services\ReportExporter;
 use App\Services\SchemaValidationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\View\View;
 
 final class DashboardController extends Controller
@@ -162,6 +164,36 @@ final class DashboardController extends Controller
         }
 
         return new JsonResponse(['action' => $action, 'schema' => $schema]);
+    }
+
+    public function exportPdf(Request $request, ConformanceService $conformance, ReportExporter $exporter): Response
+    {
+        /** @var Tenant $tenant */
+        $tenant = $request->user();
+        $version = $tenant->protocol_version ?? '0.1.0';
+
+        $report = $conformance->getReport($tenant->id, $version);
+        $pdf = $exporter->toPdf($report, $tenant);
+
+        return new Response($pdf, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="conformance-report.pdf"',
+        ]);
+    }
+
+    public function exportJson(Request $request, ConformanceService $conformance, ReportExporter $exporter): Response
+    {
+        /** @var Tenant $tenant */
+        $tenant = $request->user();
+        $version = $tenant->protocol_version ?? '0.1.0';
+
+        $report = $conformance->getReport($tenant->id, $version);
+        $json = $exporter->toJson($report);
+
+        return new Response($json, 200, [
+            'Content-Type' => 'application/json',
+            'Content-Disposition' => 'attachment; filename="conformance-report.json"',
+        ]);
     }
 
     public function resetConformance(Request $request, ConformanceService $conformance): RedirectResponse

@@ -32,6 +32,8 @@ Route::prefix('dashboard')->middleware('auth')->group(function (): void {
     Route::post('commands/{action}', [DashboardController::class, 'sendCommand']);
     Route::get('commands/{action}/schema', [DashboardController::class, 'commandSchema']);
     Route::get('conformance', [DashboardController::class, 'conformance'])->name('dashboard.conformance');
+    Route::get('conformance/export/pdf', [DashboardController::class, 'exportPdf']);
+    Route::get('conformance/export/json', [DashboardController::class, 'exportJson']);
     Route::post('conformance/reset', [DashboardController::class, 'resetConformance']);
     Route::get('history', [DashboardController::class, 'history'])->name('dashboard.history');
     Route::get('settings', [DashboardController::class, 'settings'])->name('dashboard.settings');

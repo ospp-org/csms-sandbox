@@ -6,8 +6,8 @@
     <div class="flex justify-between items-center mb-6">
         <h2 class="text-2xl font-bold">Conformance Report</h2>
         <div class="flex space-x-2">
-            <a href="/api/v1/conformance/export/json" class="px-3 py-1 rounded text-sm bg-gray-200 text-gray-700 hover:bg-gray-300">Export JSON</a>
-            <a href="/api/v1/conformance/export/pdf" class="px-3 py-1 rounded text-sm bg-gray-200 text-gray-700 hover:bg-gray-300">Export PDF</a>
+            <a href="/dashboard/conformance/export/json" class="px-3 py-1 rounded text-sm bg-gray-200 text-gray-700 hover:bg-gray-300">Export JSON</a>
+            <a href="/dashboard/conformance/export/pdf" class="px-3 py-1 rounded text-sm bg-gray-200 text-gray-700 hover:bg-gray-300">Export PDF</a>
             <form method="POST" action="/dashboard/conformance/reset" class="inline">
                 @csrf
                 <button type="submit" class="px-3 py-1 rounded text-sm bg-red-50 text-red-600 hover:bg-red-100" onclick="return confirm('Reset all conformance results?')">Reset</button>
