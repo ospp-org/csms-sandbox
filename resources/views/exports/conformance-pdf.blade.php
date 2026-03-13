@@ -62,15 +62,8 @@
     </table>
 
     <div class="score-box">
-        <div class="score-big">{{ $report->percentage }}%</div>
-        <div class="score-label">Overall Conformance Score</div>
-        <div class="score-detail">
-            {{ $report->passed }} passed &middot;
-            {{ $report->failed }} failed &middot;
-            {{ $report->partial }} partial &middot;
-            {{ $report->notTested }} not tested &middot;
-            {{ $report->totalTested }} / {{ $report->totalTested + $report->notTested }} tested
-        </div>
+        <div class="score-label">Tested: {{ $report->totalTested }} / {{ $report->totalTested + $report->notTested }} actions</div>
+        <div class="score-big">{{ $report->passed }} / {{ $report->totalTested }} passed ({{ $report->percentage }}%)</div>
     </div>
 
     <div class="section-title">Category Breakdown</div>

@@ -22,10 +22,8 @@
     <div class="grid grid-cols-3 gap-6 mb-6">
         <div class="bg-white rounded-lg shadow p-6 text-center">
             <canvas id="scoreChart" width="200" height="200"></canvas>
-            <p class="text-3xl font-bold mt-2">{{ $report->percentage }}%</p>
-            <p class="text-sm text-gray-500">Overall Conformance Score</p>
-            <p class="text-xs text-gray-400 mt-1">{{ $report->passed }} passed · {{ $report->failed }} failed · {{ $report->partial }} partial</p>
-            <p class="text-xs text-gray-400">{{ $report->totalTested }} of {{ $report->totalTested + $report->notTested }} actions tested</p>
+            <p class="text-sm text-gray-500 mt-3">Tested: {{ $report->totalTested }} / {{ $report->totalTested + $report->notTested }} actions</p>
+            <p class="text-2xl font-bold mt-1">Score: {{ $report->passed }} / {{ $report->totalTested }} passed ({{ $report->percentage }}%)</p>
         </div>
 
         <div class="col-span-2 bg-white rounded-lg shadow p-6">
