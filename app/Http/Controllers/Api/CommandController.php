@@ -22,7 +22,7 @@ final class CommandController extends Controller
         $result = $commandService->send(
             tenantId: $tenant->id,
             action: $action,
-            parameters: $request->all(),
+            parameters: $request->except(['_token', '_method']),
         );
 
         if (! $result->success) {

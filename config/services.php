@@ -37,9 +37,9 @@ return [
 
     'emqx' => [
         'api_url' => env('EMQX_API_URL', 'http://emqx:18083/api/v5'),
-        'api_username' => env('EMQX_API_USERNAME', 'admin'),
-        'api_password' => env('EMQX_API_PASSWORD', 'public'),
-        'webhook_secret' => env('EMQX_WEBHOOK_SECRET', 'sandbox-webhook-secret'),
+        'api_username' => env('EMQX_API_USERNAME', ''),
+        'api_password' => env('EMQX_API_PASSWORD', ''),
+        'webhook_secret' => env('EMQX_WEBHOOK_SECRET', ''),
     ],
 
     'google' => [

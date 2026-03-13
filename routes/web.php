@@ -40,7 +40,11 @@ Route::prefix('dashboard')->middleware('auth')->group(function (): void {
     Route::patch('settings', [DashboardController::class, 'updateSettings']);
 });
 
-// Internal MQTT endpoints (EMQX only, restricted by nginx to Docker network IPs)
+// Internal MQTT endpoints (EMQX only)
+// Protection: nginx restricts /internal/ to Docker network IPs (172.16.0.0/12, 10.0.0.0/8).
+// The webhook route has additional verify-emqx middleware for defense-in-depth.
+// Auth/ACL endpoints are called by EMQX on every MQTT connection — they validate
+// station credentials and tenant ownership directly, no shared secret needed.
 Route::prefix('internal/mqtt')->group(function (): void {
     Route::post('auth', MqttAuthController::class);
     Route::post('acl', MqttAclController::class);

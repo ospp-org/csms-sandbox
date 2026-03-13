@@ -84,7 +84,8 @@ final class DashboardController extends Controller
             $query->where('schema_valid', $request->input('valid') === '1');
         }
         if ($request->filled('search')) {
-            $query->where('message_id', 'like', '%' . $request->input('search') . '%');
+            $search = str_replace(['%', '_'], ['\\%', '\\_'], (string) $request->input('search'));
+            $query->where('message_id', 'like', '%' . $search . '%');
         }
 
         $messages = $query->orderByDesc('created_at')->paginate(50)->withQueryString();
@@ -129,7 +130,7 @@ final class DashboardController extends Controller
         $result = $commandService->send(
             tenantId: $tenant->id,
             action: $action,
-            parameters: $request->all(),
+            parameters: $request->except(['_token', '_method']),
         );
 
         if (! $result->success) {

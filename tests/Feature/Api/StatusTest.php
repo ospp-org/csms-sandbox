@@ -9,8 +9,8 @@ test('GET /api/v1/status returns operational status', function (): void {
             'status',
             'version',
             'services' => ['database', 'redis', 'emqx', 'queue'],
-            'stats' => ['tenants', 'messages_24h', 'active_stations'],
         ])
+        ->assertJsonMissing(['stats'])
         ->assertJsonPath('services.database', 'ok')
         ->assertJsonPath('services.redis', 'ok');
 });

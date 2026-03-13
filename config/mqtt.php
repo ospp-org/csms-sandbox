@@ -28,7 +28,7 @@ return [
     |--------------------------------------------------------------------------
     */
     'webhook' => [
-        'secret' => env('EMQX_WEBHOOK_SECRET', 'sandbox-webhook-secret'),
+        'secret' => env('EMQX_WEBHOOK_SECRET', ''),
     ],
 
     /*
