@@ -14,6 +14,14 @@ final class DevelopmentSeeder extends Seeder
 {
     public function run(): void
     {
+        // WARNING: dev credentials — DO NOT use in production
+        // Production: register via UI or API
+        if (app()->isProduction() && Tenant::count() > 0) {
+            $this->command?->info('Skipping dev seed — production with existing data');
+
+            return;
+        }
+
         $tenant = Tenant::firstOrCreate(
             ['email' => 'dev@ospp-standard.org'],
             [

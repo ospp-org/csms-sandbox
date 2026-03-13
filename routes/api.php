@@ -4,16 +4,19 @@ declare(strict_types=1);
 
 use App\Http\Controllers\Api\CommandController;
 use App\Http\Controllers\Api\ConformanceController;
+use App\Http\Controllers\Api\StatusController;
 use App\Http\Controllers\Api\StationController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\RegisterController;
 use Illuminate\Support\Facades\Route;
 
+Route::get('v1/status', StatusController::class);
+
 // Public auth routes
 Route::prefix('v1/auth')->group(function (): void {
-    Route::post('register', RegisterController::class);
-    Route::post('login', LoginController::class);
+    Route::post('register', RegisterController::class)->middleware('throttle:auth');
+    Route::post('login', LoginController::class)->middleware('throttle:auth');
 });
 
 // Authenticated routes

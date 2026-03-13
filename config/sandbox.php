@@ -53,7 +53,7 @@ return [
         'algorithm' => env('JWT_ALGORITHM', 'ES256'),
         'private_key_path' => storage_path('keys/jwt-private.pem'),
         'public_key_path' => storage_path('keys/jwt-public.pem'),
-        'ttl' => 86400, // 24 hours
+        'ttl' => (int) env('JWT_TTL', 3600), // 1 hour
     ],
 
     /*

@@ -5,7 +5,7 @@
     "description": "OSPP CSMS Sandbox — hosted, multi-tenant protocol testing environment",
     "keywords": ["ospp", "csms", "mqtt", "sandbox"],
     "license": "MIT",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "require": {
         "php": "^8.4",
         "barryvdh/laravel-dompdf": "^3.1",
