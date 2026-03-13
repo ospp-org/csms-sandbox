@@ -9,6 +9,19 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      DB_CONNECTION: pgsql
+      DB_HOST: localhost
+      DB_PORT: 5432
+      DB_DATABASE: sandbox_test
+      DB_USERNAME: sandbox
+      DB_PASSWORD: secret
+      REDIS_HOST: localhost
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ""
+      CACHE_STORE: redis
+      QUEUE_CONNECTION: redis
+      SESSION_DRIVER: redis
 
     services:
       postgres:
@@ -61,28 +74,9 @@ jobs:
 
       - name: Run migrations
         run: php artisan migrate --force
-        env:
-          DB_CONNECTION: pgsql
-          DB_HOST: localhost
-          DB_PORT: 5432
-          DB_DATABASE: sandbox_test
-          DB_USERNAME: sandbox
-          DB_PASSWORD: secret
 
       - name: PHPStan
         run: vendor/bin/phpstan analyse --no-progress
 
       - name: Tests
         run: php artisan test --parallel --processes=4
-        env:
-          DB_CONNECTION: pgsql
-          DB_HOST: localhost
-          DB_PORT: 5432
-          DB_DATABASE: sandbox_test
-          DB_USERNAME: sandbox
-          DB_PASSWORD: secret
-          REDIS_HOST: localhost
-          REDIS_PORT: 6379
-          CACHE_STORE: redis
-          QUEUE_CONNECTION: redis
-          SESSION_DRIVER: redis
