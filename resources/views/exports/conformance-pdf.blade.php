@@ -35,7 +35,7 @@
 <body>
 
 <div class="header">
-    <h1>OSPP Protocol Conformance Report</h1>
+    <h1>OSPP Conformance Report</h1>
     <p>CSMS Sandbox &mdash; Protocol Version {{ $report->protocolVersion }}</p>
 </div>
 
