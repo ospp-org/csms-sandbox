@@ -2,6 +2,16 @@
 
 declare(strict_types=1);
 
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
+
+beforeEach(function (): void {
+    RateLimiter::for('auth', function (Request $request) {
+        return Limit::perMinute(5)->by($request->ip());
+    });
+});
+
 test('login rate limited after 5 attempts', function (): void {
     $response = null;
 

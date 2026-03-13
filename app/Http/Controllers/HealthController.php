@@ -19,7 +19,7 @@ final class HealthController extends Controller
             'emqx' => $this->checkEmqx(),
         ];
 
-        $allHealthy = !in_array('error', array_values($checks), true);
+        $allHealthy = ! in_array('error', array_values($checks), true);
 
         $status = $allHealthy ? 'healthy' : 'degraded';
         $httpCode = $allHealthy ? 200 : 503;
@@ -54,17 +54,23 @@ final class HealthController extends Controller
 
     private function checkEmqx(): string
     {
+        $apiUrl = config('services.emqx.api_url');
+
+        if (empty($apiUrl)) {
+            return 'unavailable';
+        }
+
         try {
             $response = Http::timeout(3)
                 ->withBasicAuth(
                     (string) config('services.emqx.api_username'),
                     (string) config('services.emqx.api_password'),
                 )
-                ->get(config('services.emqx.api_url') . '/status');
+                ->get($apiUrl . '/status');
 
             return $response->successful() ? 'ok' : 'error';
         } catch (\Throwable) {
-            return 'error';
+            return 'unavailable';
         }
     }
 }

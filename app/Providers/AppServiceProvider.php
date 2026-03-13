@@ -23,6 +23,10 @@ final class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         RateLimiter::for('auth', function (Request $request) {
+            if (app()->runningUnitTests()) {
+                return Limit::none();
+            }
+
             return Limit::perMinute(5)->by($request->ip());
         });
 

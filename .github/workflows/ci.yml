@@ -20,7 +20,7 @@ jobs:
       REDIS_PORT: 6379
       REDIS_PASSWORD: ""
       CACHE_STORE: redis
-      QUEUE_CONNECTION: redis
+      QUEUE_CONNECTION: sync
       SESSION_DRIVER: redis
 
     services:

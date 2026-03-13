@@ -58,12 +58,18 @@ final class StatusController extends Controller
 
     private function checkEmqx(): string
     {
+        $apiUrl = config('services.emqx.api_url');
+
+        if (empty($apiUrl)) {
+            return 'unavailable';
+        }
+
         try {
-            $response = Http::timeout(3)->get(config('services.emqx.api_url') . '/status');
+            $response = Http::timeout(3)->get($apiUrl . '/status');
 
             return $response->successful() ? 'ok' : 'error';
         } catch (\Throwable) {
-            return 'error';
+            return 'unavailable';
         }
     }
 
