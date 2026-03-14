@@ -43,6 +43,13 @@ return [
         'SetMaintenanceModeResponse',
         'TriggerMessageResponse',
         'UpdateServiceCatalogResponse',
+        // Offline (2)
+        'AuthorizeOfflinePass',
+        'TransactionEvent',
+        // Notifications (3)
+        'ConnectionLost',
+        'DiagnosticsNotification',
+        'FirmwareStatusNotification',
         // Security (5)
         'SecurityEvent',
         'SignCertificate',
@@ -66,6 +73,8 @@ return [
             'GetDiagnosticsResponse', 'SetMaintenanceModeResponse',
             'TriggerMessageResponse', 'UpdateServiceCatalogResponse',
         ],
+        'offline' => ['AuthorizeOfflinePass', 'TransactionEvent'],
+        'notifications' => ['ConnectionLost', 'DiagnosticsNotification', 'FirmwareStatusNotification'],
         'security' => [
             'SecurityEvent', 'SignCertificate',
             'CertificateInstall', 'CertificateInstallResponse',

@@ -30,6 +30,11 @@ use App\Handlers\TriggerMessageResponseHandler;
 use App\Handlers\UpdateFirmwareResponseHandler;
 use App\Handlers\UpdateServiceCatalogResponseHandler;
 use App\Handlers\GetDiagnosticsResponseHandler;
+use App\Handlers\AuthorizeOfflinePassHandler;
+use App\Handlers\TransactionEventHandler;
+use App\Handlers\ConnectionLostHandler;
+use App\Handlers\DiagnosticsNotificationHandler;
+use App\Handlers\FirmwareStatusNotificationHandler;
 use App\Models\TenantStation;
 use Illuminate\Support\Facades\Log;
 
@@ -58,6 +63,11 @@ final class MqttMessageDispatcher
         'UpdateServiceCatalogResponse' => UpdateServiceCatalogResponseHandler::class,
         'CertificateInstallResponse' => CertificateInstallResponseHandler::class,
         'TriggerCertificateRenewalResponse' => TriggerCertificateRenewalResponseHandler::class,
+        'AuthorizeOfflinePass' => AuthorizeOfflinePassHandler::class,
+        'TransactionEvent' => TransactionEventHandler::class,
+        'ConnectionLost' => ConnectionLostHandler::class,
+        'DiagnosticsNotification' => DiagnosticsNotificationHandler::class,
+        'FirmwareStatusNotification' => FirmwareStatusNotificationHandler::class,
     ];
 
     public function __construct(
