@@ -153,7 +153,6 @@ services:
     ports:
       - "${MQTT_PORT:-1883}:1883"
       - "${MQTT_TLS_PORT:-8883}:8883"
-      - "${EMQX_DASHBOARD_PORT:-18083}:18083"
     healthcheck:
       test: ["CMD-SHELL", "emqx ctl status | grep started"]
       interval: 10s
