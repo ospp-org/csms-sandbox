@@ -153,7 +153,9 @@ final class MqttMessageDispatcher
         $validationMode = $station->tenant->validation_mode ?? 'strict';
 
         if (! $schemaValid && $validationMode === 'strict') {
-            $this->publishErrorResponse($stationId, $action, $messageId, $protocolVersion, $validationErrors);
+            if ($messageType === 'Request') {
+                $this->publishErrorResponse($stationId, $action, $messageId, $protocolVersion, $validationErrors);
+            }
 
             return;
         }
@@ -169,7 +171,7 @@ final class MqttMessageDispatcher
         $handler = app($handlerClass);
         $result = $handler->handle($context);
 
-        if ($result->responsePayload !== []) {
+        if ($messageType === 'Request' && $result->responsePayload !== []) {
             $this->publishResponse($stationId, $action, $messageId, $protocolVersion, $result);
         }
     }
