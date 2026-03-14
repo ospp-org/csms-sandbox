@@ -19,7 +19,6 @@ final class GetConfigurationResponseHandler implements OsppHandler
 
     public function handle(HandlerContext $context): HandlerResult
     {
-        $status = $context->payload['status'] ?? 'Unknown';
         $command = $this->commandService->findPendingByMessageId($context->messageId);
 
         if ($command !== null) {
@@ -30,11 +29,19 @@ final class GetConfigurationResponseHandler implements OsppHandler
             ]);
         }
 
-        if ($status === 'Accepted' && isset($context->payload['configuration'])) {
-            $configuration = $context->payload['configuration'];
+        $configuration = $context->payload['configuration'] ?? [];
 
-            if (is_array($configuration) && $configuration !== []) {
-                $this->stationState->setConfig($context->stationId, $configuration);
+        if (is_array($configuration) && $configuration !== []) {
+            $config = [];
+
+            foreach ($configuration as $entry) {
+                if (isset($entry['key'], $entry['value'])) {
+                    $config[$entry['key']] = $entry['value'];
+                }
+            }
+
+            if ($config !== []) {
+                $this->stationState->setConfig($context->stationId, $config);
             }
         }
 

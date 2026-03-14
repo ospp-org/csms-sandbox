@@ -9,11 +9,11 @@ use App\Models\Tenant;
 use App\Models\TenantStation;
 use App\Services\StationStateService;
 
-test('Accepted stores configuration in Redis', function (): void {
+test('Stores configuration in Redis', function (): void {
     $tenant = Tenant::factory()->create();
-    $station = TenantStation::factory()->for($tenant)->create(['station_id' => 'stn_getconf01']);
+    TenantStation::factory()->for($tenant)->create(['station_id' => 'stn_getconf01']);
 
-    $command = CommandHistory::create([
+    CommandHistory::create([
         'tenant_id' => $tenant->id,
         'station_id' => 'stn_getconf01',
         'action' => 'GetConfiguration',
@@ -29,7 +29,10 @@ test('Accepted stores configuration in Redis', function (): void {
         action: 'GetConfigurationResponse',
         messageId: 'msg_getconf_001',
         messageType: 'Response',
-        payload: ['status' => 'Accepted', 'configuration' => ['key1' => 'val1']],
+        payload: ['configuration' => [
+            ['key' => 'heartbeatInterval', 'value' => '30', 'readonly' => false],
+            ['key' => 'firmwareVersion', 'value' => '1.2.0', 'readonly' => true],
+        ]],
         envelope: [],
         protocolVersion: '0.1.0',
     );
@@ -40,13 +43,13 @@ test('Accepted stores configuration in Redis', function (): void {
 
     $stationState = app(StationStateService::class);
     $config = $stationState->getConfig('stn_getconf01');
-    expect($config)->toHaveKey('key1');
-    expect($config['key1'])->toBe('val1');
+    expect($config['heartbeatInterval'])->toBe('30');
+    expect($config['firmwareVersion'])->toBe('1.2.0');
 });
 
-test('works without pending command', function (): void {
+test('Works without pending command', function (): void {
     $tenant = Tenant::factory()->create();
-    $station = TenantStation::factory()->for($tenant)->create(['station_id' => 'stn_getconf02']);
+    TenantStation::factory()->for($tenant)->create(['station_id' => 'stn_getconf02']);
 
     $handler = app(GetConfigurationResponseHandler::class);
     $context = new HandlerContext(
@@ -55,7 +58,9 @@ test('works without pending command', function (): void {
         action: 'GetConfigurationResponse',
         messageId: 'msg_getconf_no_cmd',
         messageType: 'Response',
-        payload: ['status' => 'Accepted', 'configuration' => ['key2' => 'val2']],
+        payload: ['configuration' => [
+            ['key' => 'key2', 'value' => 'val2', 'readonly' => false],
+        ]],
         envelope: [],
         protocolVersion: '0.1.0',
     );
@@ -63,4 +68,8 @@ test('works without pending command', function (): void {
     $result = $handler->handle($context);
 
     expect($result->success)->toBeTrue();
+
+    $stationState = app(StationStateService::class);
+    $config = $stationState->getConfig('stn_getconf02');
+    expect($config['key2'])->toBe('val2');
 });

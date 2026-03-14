@@ -19,7 +19,7 @@ final class ChangeConfigurationResponseHandler implements OsppHandler
 
     public function handle(HandlerContext $context): HandlerResult
     {
-        $status = $context->payload['status'] ?? 'Unknown';
+        $results = $context->payload['results'] ?? [];
         $command = $this->commandService->findPendingByMessageId($context->messageId);
 
         if ($command !== null) {
@@ -30,11 +30,31 @@ final class ChangeConfigurationResponseHandler implements OsppHandler
             ]);
         }
 
-        if ($status === 'Accepted' && $command !== null) {
-            $keys = $command->payload['keys'] ?? [];
+        // Atomic: only apply config if ALL keys were Accepted or RebootRequired
+        if (is_array($results) && $results !== [] && $command !== null) {
+            $allAccepted = true;
 
-            if (is_array($keys) && $keys !== []) {
-                $this->stationState->setConfig($context->stationId, $keys);
+            foreach ($results as $result) {
+                $keyStatus = $result['status'] ?? '';
+                if ($keyStatus !== 'Accepted' && $keyStatus !== 'RebootRequired') {
+                    $allAccepted = false;
+                    break;
+                }
+            }
+
+            if ($allAccepted) {
+                $requestKeys = $command->payload['keys'] ?? [];
+                $config = [];
+
+                foreach ($requestKeys as $entry) {
+                    if (isset($entry['key'], $entry['value'])) {
+                        $config[$entry['key']] = $entry['value'];
+                    }
+                }
+
+                if ($config !== []) {
+                    $this->stationState->setConfig($context->stationId, $config);
+                }
             }
         }
 

@@ -9,16 +9,19 @@ use App\Models\Tenant;
 use App\Models\TenantStation;
 use App\Services\StationStateService;
 
-test('Accepted updates config in Redis', function (): void {
+test('All Accepted results apply config in Redis', function (): void {
     $tenant = Tenant::factory()->create();
-    $station = TenantStation::factory()->for($tenant)->create(['station_id' => 'stn_config01']);
+    TenantStation::factory()->for($tenant)->create(['station_id' => 'stn_config01']);
 
-    $command = CommandHistory::create([
+    CommandHistory::create([
         'tenant_id' => $tenant->id,
         'station_id' => 'stn_config01',
         'action' => 'ChangeConfiguration',
         'message_id' => 'msg_config_001',
-        'payload' => ['keys' => ['heartbeatInterval' => '60']],
+        'payload' => ['keys' => [
+            ['key' => 'heartbeatInterval', 'value' => '60'],
+            ['key' => 'retryTimeout', 'value' => '30'],
+        ]],
         'status' => 'sent',
     ]);
 
@@ -29,7 +32,10 @@ test('Accepted updates config in Redis', function (): void {
         action: 'ChangeConfigurationResponse',
         messageId: 'msg_config_001',
         messageType: 'Response',
-        payload: ['status' => 'Accepted'],
+        payload: ['results' => [
+            ['key' => 'heartbeatInterval', 'status' => 'Accepted'],
+            ['key' => 'retryTimeout', 'status' => 'RebootRequired'],
+        ]],
         envelope: [],
         protocolVersion: '0.1.0',
     );
@@ -40,20 +46,23 @@ test('Accepted updates config in Redis', function (): void {
 
     $stationState = app(StationStateService::class);
     $config = $stationState->getConfig('stn_config01');
-    expect($config)->toHaveKey('heartbeatInterval');
     expect($config['heartbeatInterval'])->toBe('60');
+    expect($config['retryTimeout'])->toBe('30');
 });
 
-test('Rejected does not update config', function (): void {
+test('Any Rejected result prevents all config changes (atomic)', function (): void {
     $tenant = Tenant::factory()->create();
-    $station = TenantStation::factory()->for($tenant)->create(['station_id' => 'stn_config02']);
+    TenantStation::factory()->for($tenant)->create(['station_id' => 'stn_config02']);
 
-    $command = CommandHistory::create([
+    CommandHistory::create([
         'tenant_id' => $tenant->id,
         'station_id' => 'stn_config02',
         'action' => 'ChangeConfiguration',
         'message_id' => 'msg_config_002',
-        'payload' => ['keys' => ['heartbeatInterval' => '120']],
+        'payload' => ['keys' => [
+            ['key' => 'heartbeatInterval', 'value' => '120'],
+            ['key' => 'debugMode', 'value' => 'true'],
+        ]],
         'status' => 'sent',
     ]);
 
@@ -64,7 +73,10 @@ test('Rejected does not update config', function (): void {
         action: 'ChangeConfigurationResponse',
         messageId: 'msg_config_002',
         messageType: 'Response',
-        payload: ['status' => 'Rejected'],
+        payload: ['results' => [
+            ['key' => 'heartbeatInterval', 'status' => 'Accepted'],
+            ['key' => 'debugMode', 'status' => 'Rejected', 'errorCode' => 1001, 'errorText' => 'ReadOnly'],
+        ]],
         envelope: [],
         protocolVersion: '0.1.0',
     );
@@ -74,4 +86,5 @@ test('Rejected does not update config', function (): void {
     $stationState = app(StationStateService::class);
     $config = $stationState->getConfig('stn_config02');
     expect($config)->not->toHaveKey('heartbeatInterval');
+    expect($config)->not->toHaveKey('debugMode');
 });
