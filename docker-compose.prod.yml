@@ -26,6 +26,12 @@ services:
 #    volumes:
 #      - /dev/null:/tmp/.placeholder:ro
 
+  emqx:
+    ports:
+      - "127.0.0.1:${EMQX_DASHBOARD_PORT:-18083}:18083"
+      - "${MQTT_PORT:-1883}:1883"
+      - "${MQTT_TLS_PORT:-8883}:8883"
+
   nginx:
 #    volumes:
 #      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
