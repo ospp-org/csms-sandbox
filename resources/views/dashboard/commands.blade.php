@@ -138,8 +138,10 @@ function commandCenter() {
         preparePayload() {
             const payload = {};
             for (const [key, val] of Object.entries(this.formData)) {
+                if (val === '' || val === null || val === undefined) continue;
                 const prop = this.schema?.properties?.[key];
                 if (prop && (prop.type === 'object' || prop.type === 'array')) {
+                    if (val === '{}' || val === '[]') continue;
                     try { payload[key] = JSON.parse(val); } catch { payload[key] = val; }
                 } else {
                     payload[key] = val;
