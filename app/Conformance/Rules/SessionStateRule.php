@@ -11,9 +11,6 @@ use App\Services\StationStateService;
 
 final class SessionStateRule implements ConformanceRule
 {
-    /** @var list<string> */
-    private const SESSION_ACTIONS = ['MeterValues', 'StopServiceResponse'];
-
     public function name(): string
     {
         return 'session_state';
@@ -21,21 +18,27 @@ final class SessionStateRule implements ConformanceRule
 
     public function check(HandlerContext $context, StationStateService $state): RuleResult
     {
-        if (! in_array($context->action, self::SESSION_ACTIONS, true)) {
+        if ($context->action !== 'MeterValues') {
             return new RuleResult(true, 'session_state');
         }
 
-        $bayNumber = (int) ($context->payload['bayNumber'] ?? 0);
+        $bayId = (string) ($context->payload['bayId'] ?? '');
+
+        if ($bayId === '') {
+            return new RuleResult(false, 'session_state', 'Missing bayId');
+        }
+
+        $bayNumber = $state->resolveBayNumber($context->stationId, $bayId);
 
         if ($bayNumber === 0) {
-            return new RuleResult(false, 'session_state', 'Missing bayNumber');
+            return new RuleResult(false, 'session_state', "Unknown bayId: {$bayId}");
         }
 
         $session = $state->getBaySession($context->stationId, $bayNumber);
 
         if ($session === null) {
             return new RuleResult(false, 'session_state',
-                "{$context->action} received but no active session on bay {$bayNumber}");
+                "MeterValues received but no active session on bay {$bayNumber}");
         }
 
         return new RuleResult(true, 'session_state');
