@@ -20,7 +20,7 @@
                         <option value="ChangeConfiguration">ChangeConfiguration</option>
                         <option value="GetConfiguration">GetConfiguration</option>
                         <option value="UpdateFirmware">UpdateFirmware</option>
-                        <option value="UploadDiagnostics">UploadDiagnostics</option>
+                        <option value="GetDiagnostics">GetDiagnostics</option>
                         <option value="SetMaintenanceMode">SetMaintenanceMode</option>
                         <option value="TriggerMessage">TriggerMessage</option>
                         <option value="UpdateServiceCatalog">UpdateServiceCatalog</option>
@@ -33,7 +33,10 @@
                     <div class="space-y-3">
                         <template x-for="(prop, key) in schema.properties || {}" :key="key">
                             <div>
-                                <label class="block text-sm text-gray-600 mb-1" x-text="key"></label>
+                                <label class="block text-sm text-gray-600 mb-1">
+                                    <span x-text="key"></span>
+                                    <span x-show="(schema.required || []).includes(key)" class="text-red-400">*</span>
+                                </label>
                                 <template x-if="prop.enum">
                                     <select x-model="formData[key]" class="w-full border rounded px-3 py-2 text-sm">
                                         <template x-for="opt in prop.enum">
@@ -41,17 +44,23 @@
                                         </template>
                                     </select>
                                 </template>
-                                <template x-if="!prop.enum && (prop.type === 'string')">
-                                    <input type="text" x-model="formData[key]" class="w-full border rounded px-3 py-2 text-sm">
-                                </template>
-                                <template x-if="prop.type === 'number' || prop.type === 'integer'">
-                                    <input type="number" x-model.number="formData[key]" class="w-full border rounded px-3 py-2 text-sm">
-                                </template>
-                                <template x-if="prop.type === 'boolean'">
+                                <template x-if="!prop.enum && prop.type === 'boolean'">
                                     <select x-model="formData[key]" class="w-full border rounded px-3 py-2 text-sm">
                                         <option :value="true">true</option>
                                         <option :value="false">false</option>
                                     </select>
+                                </template>
+                                <template x-if="!prop.enum && (prop.type === 'number' || prop.type === 'integer')">
+                                    <input type="number" x-model.number="formData[key]" class="w-full border rounded px-3 py-2 text-sm">
+                                </template>
+                                <template x-if="!prop.enum && prop.type === 'object'">
+                                    <textarea x-model="formData[key]" rows="3" placeholder="{}" class="w-full border rounded px-3 py-2 text-sm font-mono"></textarea>
+                                </template>
+                                <template x-if="!prop.enum && prop.type === 'array'">
+                                    <textarea x-model="formData[key]" rows="3" placeholder="[]" class="w-full border rounded px-3 py-2 text-sm font-mono"></textarea>
+                                </template>
+                                <template x-if="!prop.enum && (prop.type === 'string' || (!prop.type && !prop.enum))">
+                                    <input type="text" x-model="formData[key]" :placeholder="prop.description || ''" class="w-full border rounded px-3 py-2 text-sm">
                                 </template>
                             </div>
                         </template>
@@ -117,11 +126,26 @@ function commandCenter() {
             for (const [key, prop] of Object.entries(schema.properties || {})) {
                 if (prop.default !== undefined) data[key] = prop.default;
                 else if (prop.enum) data[key] = prop.enum[0];
-                else if (prop.type === 'string') data[key] = '';
                 else if (prop.type === 'number' || prop.type === 'integer') data[key] = 0;
                 else if (prop.type === 'boolean') data[key] = false;
+                else if (prop.type === 'object') data[key] = '{}';
+                else if (prop.type === 'array') data[key] = '[]';
+                else data[key] = '';
             }
             return data;
+        },
+
+        preparePayload() {
+            const payload = {};
+            for (const [key, val] of Object.entries(this.formData)) {
+                const prop = this.schema?.properties?.[key];
+                if (prop && (prop.type === 'object' || prop.type === 'array')) {
+                    try { payload[key] = JSON.parse(val); } catch { payload[key] = val; }
+                } else {
+                    payload[key] = val;
+                }
+            }
+            return payload;
         },
 
         async send() {
@@ -135,7 +159,7 @@ function commandCenter() {
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
                         'Accept': 'application/json',
                     },
-                    body: JSON.stringify(this.formData)
+                    body: JSON.stringify(this.preparePayload())
                 });
                 this.result = await resp.json();
                 this.recentCommands.unshift({
