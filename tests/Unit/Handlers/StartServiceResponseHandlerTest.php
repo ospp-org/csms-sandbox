@@ -23,6 +23,7 @@ test('Accepted sets bay to Occupied and records session', function (): void {
     ]);
 
     app(StationStateService::class)->resetState('stn_start01', 2);
+    app(StationStateService::class)->setBayIdMapping('stn_start01', 'bay_00000001', 1);
 
     $handler = app(StartServiceResponseHandler::class);
     $context = new HandlerContext(
@@ -61,6 +62,7 @@ test('Rejected does not change bay state', function (): void {
     ]);
 
     app(StationStateService::class)->resetState('stn_start02', 2);
+    app(StationStateService::class)->setBayIdMapping('stn_start02', 'bay_00000001', 1);
 
     $handler = app(StartServiceResponseHandler::class);
     $context = new HandlerContext(

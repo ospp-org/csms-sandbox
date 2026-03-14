@@ -32,11 +32,13 @@ final class ReserveBayResponseHandler implements OsppHandler
 
         if ($status === 'Accepted' && $command !== null) {
             $bayId = (string) ($command->payload['bayId'] ?? '');
-            $bayNumber = (int) preg_replace('/\D/', '', $bayId);
+            $bayNumber = $this->stationState->resolveBayNumber($context->stationId, $bayId);
             $reservationId = (string) ($command->payload['reservationId'] ?? '');
 
-            $this->stationState->setBayStatus($context->stationId, $bayNumber, 'Reserved');
-            $this->stationState->setBayReservation($context->stationId, $bayNumber, $reservationId ?: null);
+            if ($bayNumber > 0) {
+                $this->stationState->setBayStatus($context->stationId, $bayNumber, 'Reserved');
+                $this->stationState->setBayReservation($context->stationId, $bayNumber, $reservationId ?: null);
+            }
         }
 
         return HandlerResult::acknowledged();

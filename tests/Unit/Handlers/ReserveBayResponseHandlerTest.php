@@ -23,6 +23,7 @@ test('Accepted sets bay to Reserved', function (): void {
     ]);
 
     app(StationStateService::class)->resetState('stn_reserve01', 2);
+    app(StationStateService::class)->setBayIdMapping('stn_reserve01', 'bay_00000001', 1);
 
     $handler = app(ReserveBayResponseHandler::class);
     $context = new HandlerContext(
@@ -58,6 +59,7 @@ test('sets reservation in Redis', function (): void {
     ]);
 
     app(StationStateService::class)->resetState('stn_reserve02', 2);
+    app(StationStateService::class)->setBayIdMapping('stn_reserve02', 'bay_00000001', 1);
 
     $handler = app(ReserveBayResponseHandler::class);
     $context = new HandlerContext(

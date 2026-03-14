@@ -76,6 +76,18 @@ final class StationStateService
         return $bays;
     }
 
+    public function setBayIdMapping(string $stationId, string $bayId, int $bayNumber): void
+    {
+        Redis::hset(self::PREFIX . $stationId . ':baymap', $bayId, (string) $bayNumber);
+    }
+
+    public function resolveBayNumber(string $stationId, string $bayId): int
+    {
+        $number = Redis::hget(self::PREFIX . $stationId . ':baymap', $bayId);
+
+        return $number ? (int) $number : 0;
+    }
+
     /**
      * @return array<string, string>
      */

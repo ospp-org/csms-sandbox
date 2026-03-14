@@ -19,6 +19,11 @@ final class StatusNotificationHandler implements OsppHandler
     {
         $bayStatus = (string) ($context->payload['status'] ?? '');
         $bayNumber = (int) ($context->payload['bayNumber'] ?? 0);
+        $bayId = (string) ($context->payload['bayId'] ?? '');
+
+        if ($bayId !== '' && $bayNumber > 0) {
+            $this->stationState->setBayIdMapping($context->stationId, $bayId, $bayNumber);
+        }
 
         $this->stationState->setBayStatus($context->stationId, $bayNumber, $bayStatus);
 

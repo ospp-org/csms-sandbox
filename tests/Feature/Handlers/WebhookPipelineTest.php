@@ -139,6 +139,8 @@ test('StartServiceResponse through webhook pipeline updates bay status', functio
         'status' => 'sent',
     ]);
 
+    app(StationStateService::class)->setBayIdMapping('stn_a0000003', 'bay_00000001', 1);
+
     $this->postJson('/internal/mqtt/webhook', [
         'topic' => 'ospp/v1/stations/stn_a0000003/to-server',
         'payload' => json_encode([

@@ -14,6 +14,7 @@ test('Accepted with bayId sets bay to Unavailable', function (): void {
     TenantStation::factory()->for($tenant)->create(['station_id' => 'stn_mm01']);
 
     app(StationStateService::class)->resetState('stn_mm01', 2);
+    app(StationStateService::class)->setBayIdMapping('stn_mm01', 'bay_00000001', 1);
 
     $command = CommandHistory::create([
         'tenant_id' => $tenant->id,
@@ -52,6 +53,7 @@ test('Accepted with enabled=false sets bay Available', function (): void {
     TenantStation::factory()->for($tenant)->create(['station_id' => 'stn_mm02']);
 
     app(StationStateService::class)->resetState('stn_mm02', 2);
+    app(StationStateService::class)->setBayIdMapping('stn_mm02', 'bay_00000001', 1);
 
     $command = CommandHistory::create([
         'tenant_id' => $tenant->id,

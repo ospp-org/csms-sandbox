@@ -23,6 +23,7 @@ test('Accepted sets bay to Finishing', function (): void {
     ]);
 
     app(StationStateService::class)->resetState('stn_stop01', 2);
+    app(StationStateService::class)->setBayIdMapping('stn_stop01', 'bay_00000001', 1);
 
     $handler = app(StopServiceResponseHandler::class);
     $context = new HandlerContext(
@@ -58,6 +59,7 @@ test('updates command to responded', function (): void {
     ]);
 
     app(StationStateService::class)->resetState('stn_stop02', 2);
+    app(StationStateService::class)->setBayIdMapping('stn_stop02', 'bay_00000001', 1);
 
     $handler = app(StopServiceResponseHandler::class);
     $context = new HandlerContext(

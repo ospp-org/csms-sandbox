@@ -34,12 +34,13 @@ final class SetMaintenanceModeResponseHandler implements OsppHandler
                 $bayId = $commandPayload['bayId'] ?? null;
 
                 if ($bayId !== null) {
-                    $bayNumber = (int) preg_replace('/\D/', '', (string) $bayId);
-                    $bayNumber = $bayNumber === 0 ? 1 : $bayNumber;
+                    $bayNumber = $this->stationState->resolveBayNumber($context->stationId, (string) $bayId);
                     $enabled = (bool) ($commandPayload['enabled'] ?? false);
                     $bayStatus = $enabled ? 'Unavailable' : 'Available';
 
-                    $this->stationState->setBayStatus($context->stationId, $bayNumber, $bayStatus);
+                    if ($bayNumber > 0) {
+                        $this->stationState->setBayStatus($context->stationId, $bayNumber, $bayStatus);
+                    }
                 }
             }
         }

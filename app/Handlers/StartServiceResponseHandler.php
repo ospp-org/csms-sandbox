@@ -32,13 +32,15 @@ final class StartServiceResponseHandler implements OsppHandler
 
         if ($status === 'Accepted' && $command !== null) {
             $bayId = (string) ($command->payload['bayId'] ?? '');
-            $bayNumber = (int) preg_replace('/\D/', '', $bayId);
+            $bayNumber = $this->stationState->resolveBayNumber($context->stationId, $bayId);
 
-            $sessionId = (string) ($context->payload['sessionId'] ?? $command->payload['sessionId'] ?? '');
+            $sessionId = (string) ($command->payload['sessionId'] ?? '');
             $serviceId = (string) ($command->payload['serviceId'] ?? '');
 
-            $this->stationState->setBayStatus($context->stationId, $bayNumber, 'Occupied');
-            $this->stationState->setBaySession($context->stationId, $bayNumber, $sessionId ?: null, $serviceId ?: null);
+            if ($bayNumber > 0) {
+                $this->stationState->setBayStatus($context->stationId, $bayNumber, 'Occupied');
+                $this->stationState->setBaySession($context->stationId, $bayNumber, $sessionId ?: null, $serviceId ?: null);
+            }
         }
 
         return HandlerResult::acknowledged();

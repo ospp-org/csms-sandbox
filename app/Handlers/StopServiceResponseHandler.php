@@ -32,10 +32,12 @@ final class StopServiceResponseHandler implements OsppHandler
 
         if ($status === 'Accepted' && $command !== null) {
             $bayId = (string) ($command->payload['bayId'] ?? '');
-            $bayNumber = (int) preg_replace('/\D/', '', $bayId);
+            $bayNumber = $this->stationState->resolveBayNumber($context->stationId, $bayId);
 
-            $this->stationState->setBayStatus($context->stationId, $bayNumber, 'Finishing');
-            $this->stationState->setBaySession($context->stationId, $bayNumber, null);
+            if ($bayNumber > 0) {
+                $this->stationState->setBayStatus($context->stationId, $bayNumber, 'Finishing');
+                $this->stationState->setBaySession($context->stationId, $bayNumber, null);
+            }
         }
 
         return HandlerResult::acknowledged();

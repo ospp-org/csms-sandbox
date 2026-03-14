@@ -24,6 +24,7 @@ test('Accepted sets bay to Available', function (): void {
 
     $stationState = app(StationStateService::class);
     $stationState->resetState('stn_cancel01', 2);
+    $stationState->setBayIdMapping('stn_cancel01', 'bay_00000001', 1);
     $stationState->setBayStatus('stn_cancel01', 1, 'Reserved');
     $stationState->setBayReservation('stn_cancel01', 1, 'res_to_cancel');
 
@@ -60,6 +61,7 @@ test('clears reservation', function (): void {
 
     $stationState = app(StationStateService::class);
     $stationState->resetState('stn_cancel02', 2);
+    $stationState->setBayIdMapping('stn_cancel02', 'bay_00000001', 1);
     $stationState->setBayStatus('stn_cancel02', 1, 'Reserved');
     $stationState->setBayReservation('stn_cancel02', 1, 'res_to_clear');
 
