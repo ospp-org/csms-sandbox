@@ -14,7 +14,6 @@ final class DataTransferHandler implements OsppHandler
     {
         return HandlerResult::accepted([
             'status' => 'Accepted',
-            'data' => null,
         ]);
     }
 }

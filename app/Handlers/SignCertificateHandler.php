@@ -12,12 +12,11 @@ final class SignCertificateHandler implements OsppHandler
 {
     public function handle(HandlerContext $context): HandlerResult
     {
-        // Sandbox: return a placeholder self-signed certificate PEM.
-        // A real CSMS would sign the CSR from $context->payload['csr'] here.
+        // Sandbox: acknowledge CSR receipt. A real CSMS would process the CSR
+        // and deliver the signed certificate via a separate CertificateInstall command.
 
         return HandlerResult::accepted([
             'status' => 'Accepted',
-            'certificate' => "-----BEGIN CERTIFICATE-----\nMIIBxTCCAWugAwIBAgI...sandbox-test-cert...\n-----END CERTIFICATE-----",
         ]);
     }
 }

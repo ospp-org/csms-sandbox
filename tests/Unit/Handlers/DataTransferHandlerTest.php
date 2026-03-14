@@ -27,7 +27,7 @@ test('DataTransfer returns Accepted', function (): void {
 
     expect($result->success)->toBeTrue();
     expect($result->responsePayload['status'])->toBe('Accepted');
-    expect($result->responsePayload['data'])->toBeNull();
+    expect($result->responsePayload)->not->toHaveKey('data');
 });
 
 test('DataTransfer accepts any vendor data', function (): void {

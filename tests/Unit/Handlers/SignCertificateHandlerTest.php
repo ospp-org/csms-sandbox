@@ -26,10 +26,10 @@ test('SignCertificate returns certificate', function (): void {
 
     expect($result->success)->toBeTrue();
     expect($result->responsePayload['status'])->toBe('Accepted');
-    expect($result->responsePayload)->toHaveKey('certificate');
+    expect($result->responsePayload)->not->toHaveKey('certificate');
 });
 
-test('SignCertificate returns certificate string', function (): void {
+test('SignCertificate acknowledges CSR without certificate in response', function (): void {
     $handler = app(SignCertificateHandler::class);
 
     $context = new HandlerContext(
@@ -49,5 +49,5 @@ test('SignCertificate returns certificate string', function (): void {
     $result = $handler->handle($context);
 
     expect($result->success)->toBeTrue();
-    expect($result->responsePayload['certificate'])->toContain('BEGIN CERTIFICATE');
+    expect($result->responsePayload)->toBe(['status' => 'Accepted']);
 });

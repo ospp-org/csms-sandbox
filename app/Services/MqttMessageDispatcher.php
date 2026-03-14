@@ -197,7 +197,7 @@ final class MqttMessageDispatcher
             'action' => $action,
             'messageId' => $messageId,
             'messageType' => 'Response',
-            'source' => 'CSMS',
+            'source' => 'Server',
             'protocolVersion' => $protocolVersion,
             'timestamp' => now()->format('Y-m-d\TH:i:s.v\Z'),
             'payload' => $result->responsePayload,
@@ -253,7 +253,7 @@ final class MqttMessageDispatcher
             'action' => $action,
             'messageId' => $messageId,
             'messageType' => 'Response',
-            'source' => 'CSMS',
+            'source' => 'Server',
             'protocolVersion' => $protocolVersion,
             'timestamp' => now()->format('Y-m-d\TH:i:s.v\Z'),
             'payload' => [
