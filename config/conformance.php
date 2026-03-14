@@ -39,7 +39,7 @@ return [
         'GetConfigurationResponse',
         'ResetResponse',
         'UpdateFirmwareResponse',
-        'UploadDiagnosticsResponse',
+        'GetDiagnosticsResponse',
         'SetMaintenanceModeResponse',
         'TriggerMessageResponse',
         'UpdateServiceCatalogResponse',
@@ -63,7 +63,7 @@ return [
         'device_management' => [
             'ChangeConfigurationResponse', 'GetConfigurationResponse',
             'ResetResponse', 'UpdateFirmwareResponse',
-            'UploadDiagnosticsResponse', 'SetMaintenanceModeResponse',
+            'GetDiagnosticsResponse', 'SetMaintenanceModeResponse',
             'TriggerMessageResponse', 'UpdateServiceCatalogResponse',
         ],
         'security' => [

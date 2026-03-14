@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use App\Dto\HandlerContext;
-use App\Handlers\UploadDiagnosticsResponseHandler;
+use App\Handlers\GetDiagnosticsResponseHandler;
 use App\Models\CommandHistory;
 use App\Models\Tenant;
 use App\Models\TenantStation;
@@ -15,17 +15,17 @@ test('updates command status on response', function (): void {
     $command = CommandHistory::create([
         'tenant_id' => $tenant->id,
         'station_id' => 'stn_udr001',
-        'action' => 'UploadDiagnostics',
+        'action' => 'GetDiagnostics',
         'message_id' => 'msg_udr001',
         'payload' => ['uploadUrl' => 'https://example.com/diag'],
         'status' => 'sent',
     ]);
 
-    $handler = app(UploadDiagnosticsResponseHandler::class);
+    $handler = app(GetDiagnosticsResponseHandler::class);
     $context = new HandlerContext(
         tenantId: $tenant->id,
         stationId: 'stn_udr001',
-        action: 'UploadDiagnosticsResponse',
+        action: 'GetDiagnosticsResponse',
         messageId: 'msg_udr001',
         messageType: 'Response',
         payload: ['status' => 'Accepted'],
@@ -45,11 +45,11 @@ test('acknowledges without pending command', function (): void {
     $tenant = Tenant::factory()->create();
     TenantStation::factory()->for($tenant)->create(['station_id' => 'stn_udr002']);
 
-    $handler = app(UploadDiagnosticsResponseHandler::class);
+    $handler = app(GetDiagnosticsResponseHandler::class);
     $context = new HandlerContext(
         tenantId: $tenant->id,
         stationId: 'stn_udr002',
-        action: 'UploadDiagnosticsResponse',
+        action: 'GetDiagnosticsResponse',
         messageId: 'msg_udr_nomatch',
         messageType: 'Response',
         payload: ['status' => 'Accepted'],

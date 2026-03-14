@@ -9,7 +9,7 @@ use App\Dto\HandlerContext;
 use App\Dto\HandlerResult;
 use App\Services\CommandService;
 
-final class UploadDiagnosticsResponseHandler implements OsppHandler
+final class GetDiagnosticsResponseHandler implements OsppHandler
 {
     public function __construct(
         private readonly CommandService $commandService,

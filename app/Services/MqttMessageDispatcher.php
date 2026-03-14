@@ -29,7 +29,7 @@ use App\Handlers\TriggerCertificateRenewalResponseHandler;
 use App\Handlers\TriggerMessageResponseHandler;
 use App\Handlers\UpdateFirmwareResponseHandler;
 use App\Handlers\UpdateServiceCatalogResponseHandler;
-use App\Handlers\UploadDiagnosticsResponseHandler;
+use App\Handlers\GetDiagnosticsResponseHandler;
 use App\Models\TenantStation;
 use Illuminate\Support\Facades\Log;
 
@@ -52,7 +52,7 @@ final class MqttMessageDispatcher
         'GetConfigurationResponse' => GetConfigurationResponseHandler::class,
         'ResetResponse' => ResetResponseHandler::class,
         'UpdateFirmwareResponse' => UpdateFirmwareResponseHandler::class,
-        'UploadDiagnosticsResponse' => UploadDiagnosticsResponseHandler::class,
+        'GetDiagnosticsResponse' => GetDiagnosticsResponseHandler::class,
         'SetMaintenanceModeResponse' => SetMaintenanceModeResponseHandler::class,
         'TriggerMessageResponse' => TriggerMessageResponseHandler::class,
         'UpdateServiceCatalogResponse' => UpdateServiceCatalogResponseHandler::class,

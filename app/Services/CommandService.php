@@ -14,7 +14,7 @@ final class CommandService
     private const VALID_ACTIONS = [
         'StartService', 'StopService', 'ReserveBay', 'CancelReservation',
         'ChangeConfiguration', 'GetConfiguration', 'Reset', 'UpdateFirmware',
-        'UploadDiagnostics', 'SetMaintenanceMode', 'TriggerMessage',
+        'GetDiagnostics', 'SetMaintenanceMode', 'TriggerMessage',
         'UpdateServiceCatalog', 'CertificateInstall', 'TriggerCertificateRenewal',
     ];
 
