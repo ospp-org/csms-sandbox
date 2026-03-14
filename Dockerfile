@@ -46,8 +46,7 @@ CMD ["/entrypoint.sh"]
 # Stage 3: Production
 FROM development AS production
 
-RUN composer install --no-dev --no-interaction --optimize-autoloader --no-scripts \
-    && php artisan route:cache 
+RUN composer install --no-dev --no-interaction --optimize-autoloader --no-scripts 
 
 COPY docker/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
