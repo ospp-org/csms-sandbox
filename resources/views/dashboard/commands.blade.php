@@ -138,12 +138,17 @@ function commandCenter() {
         preparePayload() {
             const payload = {};
             for (const [key, val] of Object.entries(this.formData)) {
-                if (val === '' || val === null || val === undefined) continue;
                 const prop = this.schema?.properties?.[key];
-                if (prop && (prop.type === 'object' || prop.type === 'array')) {
-                    if (val === '{}' || val === '[]') continue;
+                if (prop && prop.type === 'boolean') {
+                    payload[key] = val === true || val === 'true';
+                } else if (prop && (prop.type === 'object' || prop.type === 'array')) {
+                    if (val === '{}' || val === '[]' || val === '' || val === null) continue;
                     try { payload[key] = JSON.parse(val); } catch { payload[key] = val; }
+                } else if (prop && (prop.type === 'number' || prop.type === 'integer')) {
+                    if (val === '' || val === null) continue;
+                    payload[key] = Number(val);
                 } else {
+                    if (val === '' || val === null || val === undefined) continue;
                     payload[key] = val;
                 }
             }
