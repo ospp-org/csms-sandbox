@@ -32,7 +32,7 @@ test('Accepted sets bay to Available', function (): void {
     $context = new HandlerContext(
         tenantId: $tenant->id,
         stationId: 'stn_cancel01',
-        action: 'CancelReservationResponse',
+        action: 'CancelReservation',
         messageId: 'msg_cancel_001',
         messageType: 'Response',
         payload: ['status' => 'Accepted'],
@@ -69,7 +69,7 @@ test('clears reservation', function (): void {
     $context = new HandlerContext(
         tenantId: $tenant->id,
         stationId: 'stn_cancel02',
-        action: 'CancelReservationResponse',
+        action: 'CancelReservation',
         messageId: 'msg_cancel_002',
         messageType: 'Response',
         payload: ['status' => 'Accepted'],

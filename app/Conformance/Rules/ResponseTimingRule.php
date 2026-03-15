@@ -19,15 +19,14 @@ final class ResponseTimingRule implements ConformanceRule
 
     public function check(HandlerContext $context, StationStateService $state): RuleResult
     {
-        if (! str_ends_with($context->action, 'Response')) {
+        if ($context->messageType !== 'Response') {
             return new RuleResult(true, 'response_timing');
         }
 
-        $baseAction = str_replace('Response', '', $context->action);
         $timeout = (int) config('conformance.command_response_timeout', 30);
 
         $command = CommandHistory::where('station_id', $context->stationId)
-            ->where('action', $baseAction)
+            ->where('action', $context->action)
             ->where('status', 'sent')
             ->orderByDesc('created_at')
             ->first();

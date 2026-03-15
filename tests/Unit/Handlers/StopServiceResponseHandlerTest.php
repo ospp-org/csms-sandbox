@@ -29,7 +29,7 @@ test('Accepted sets bay to Finishing', function (): void {
     $context = new HandlerContext(
         tenantId: $tenant->id,
         stationId: 'stn_stop01',
-        action: 'StopServiceResponse',
+        action: 'StopService',
         messageId: 'msg_stop_001',
         messageType: 'Response',
         payload: ['status' => 'Accepted'],
@@ -65,7 +65,7 @@ test('updates command to responded', function (): void {
     $context = new HandlerContext(
         tenantId: $tenant->id,
         stationId: 'stn_stop02',
-        action: 'StopServiceResponse',
+        action: 'StopService',
         messageId: 'msg_stop_002',
         messageType: 'Response',
         payload: ['status' => 'Accepted'],

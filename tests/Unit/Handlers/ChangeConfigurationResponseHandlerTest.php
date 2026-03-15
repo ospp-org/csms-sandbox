@@ -29,7 +29,7 @@ test('All Accepted results apply config in Redis', function (): void {
     $context = new HandlerContext(
         tenantId: $tenant->id,
         stationId: 'stn_config01',
-        action: 'ChangeConfigurationResponse',
+        action: 'ChangeConfiguration',
         messageId: 'msg_config_001',
         messageType: 'Response',
         payload: ['results' => [
@@ -70,7 +70,7 @@ test('Any Rejected result prevents all config changes (atomic)', function (): vo
     $context = new HandlerContext(
         tenantId: $tenant->id,
         stationId: 'stn_config02',
-        action: 'ChangeConfigurationResponse',
+        action: 'ChangeConfiguration',
         messageId: 'msg_config_002',
         messageType: 'Response',
         payload: ['results' => [

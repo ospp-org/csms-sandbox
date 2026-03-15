@@ -23,26 +23,22 @@ return [
         'Heartbeat',
         'StatusNotification',
         'DataTransfer',
-        // Sessions (5)
+        // Sessions (3)
         'MeterValues',
         'StartService',
-        'StartServiceResponse',
         'StopService',
-        'StopServiceResponse',
-        // Reservations (4)
+        // Reservations (2)
         'ReserveBay',
-        'ReserveBayResponse',
         'CancelReservation',
-        'CancelReservationResponse',
         // Device Management (8)
-        'ChangeConfigurationResponse',
-        'GetConfigurationResponse',
-        'ResetResponse',
-        'UpdateFirmwareResponse',
-        'GetDiagnosticsResponse',
-        'SetMaintenanceModeResponse',
-        'TriggerMessageResponse',
-        'UpdateServiceCatalogResponse',
+        'ChangeConfiguration',
+        'GetConfiguration',
+        'Reset',
+        'UpdateFirmware',
+        'GetDiagnostics',
+        'SetMaintenanceMode',
+        'TriggerMessage',
+        'UpdateServiceCatalog',
         // Offline (2)
         'AuthorizeOfflinePass',
         'TransactionEvent',
@@ -50,12 +46,11 @@ return [
         'ConnectionLost',
         'DiagnosticsNotification',
         'FirmwareStatusNotification',
-        // Security (5)
+        // Security (4)
         'SecurityEvent',
         'SignCertificate',
         'CertificateInstall',
-        'CertificateInstallResponse',
-        'TriggerCertificateRenewalResponse',
+        'TriggerCertificateRenewal',
     ],
 
     /*
@@ -65,20 +60,19 @@ return [
     */
     'categories' => [
         'core' => ['BootNotification', 'Heartbeat', 'StatusNotification', 'DataTransfer'],
-        'sessions' => ['MeterValues', 'StartService', 'StartServiceResponse', 'StopService', 'StopServiceResponse'],
-        'reservations' => ['ReserveBay', 'ReserveBayResponse', 'CancelReservation', 'CancelReservationResponse'],
+        'sessions' => ['MeterValues', 'StartService', 'StopService'],
+        'reservations' => ['ReserveBay', 'CancelReservation'],
         'device_management' => [
-            'ChangeConfigurationResponse', 'GetConfigurationResponse',
-            'ResetResponse', 'UpdateFirmwareResponse',
-            'GetDiagnosticsResponse', 'SetMaintenanceModeResponse',
-            'TriggerMessageResponse', 'UpdateServiceCatalogResponse',
+            'ChangeConfiguration', 'GetConfiguration',
+            'Reset', 'UpdateFirmware',
+            'GetDiagnostics', 'SetMaintenanceMode',
+            'TriggerMessage', 'UpdateServiceCatalog',
         ],
         'offline' => ['AuthorizeOfflinePass', 'TransactionEvent'],
         'notifications' => ['ConnectionLost', 'DiagnosticsNotification', 'FirmwareStatusNotification'],
         'security' => [
             'SecurityEvent', 'SignCertificate',
-            'CertificateInstall', 'CertificateInstallResponse',
-            'TriggerCertificateRenewalResponse',
+            'CertificateInstall', 'TriggerCertificateRenewal',
         ],
     ],
 

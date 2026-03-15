@@ -356,10 +356,10 @@ test('StartServiceResponse does not generate outbound', function (): void {
         'message_id' => 'msg_ssr01', 'payload' => ['bayId' => 'bay_00000001', 'serviceId' => 'svc_wash', 'sessionId' => 'sess_00000001'], 'status' => 'sent',
     ]);
 
-    $dispatcher->dispatch('stn_c0000b01', makeEnvelope('StartServiceResponse', 'msg_ssr01', 'Response', ['status' => 'Accepted']));
+    $dispatcher->dispatch('stn_c0000b01', makeEnvelope('StartService', 'msg_ssr01', 'Response', ['status' => 'Accepted']));
 
-    $this->assertDatabaseHas('message_log', ['station_id' => 'stn_c0000b01', 'action' => 'StartServiceResponse', 'direction' => 'inbound']);
-    expect(MessageLog::where('station_id', 'stn_c0000b01')->where('action', 'StartServiceResponse')->where('direction', 'outbound')->count())->toBe(0);
+    $this->assertDatabaseHas('message_log', ['station_id' => 'stn_c0000b01', 'action' => 'StartService', 'direction' => 'inbound']);
+    expect(MessageLog::where('station_id', 'stn_c0000b01')->where('action', 'StartService')->where('direction', 'outbound')->count())->toBe(0);
 });
 
 test('ResetResponse does not generate outbound', function (): void {
@@ -370,8 +370,8 @@ test('ResetResponse does not generate outbound', function (): void {
         'message_id' => 'msg_rr01', 'payload' => ['type' => 'Soft'], 'status' => 'sent',
     ]);
 
-    $dispatcher->dispatch('stn_c0000c01', makeEnvelope('ResetResponse', 'msg_rr01', 'Response', ['status' => 'Accepted']));
-    expect(MessageLog::where('station_id', 'stn_c0000c01')->where('action', 'ResetResponse')->where('direction', 'outbound')->count())->toBe(0);
+    $dispatcher->dispatch('stn_c0000c01', makeEnvelope('Reset', 'msg_rr01', 'Response', ['status' => 'Accepted']));
+    expect(MessageLog::where('station_id', 'stn_c0000c01')->where('action', 'Reset')->where('direction', 'outbound')->count())->toBe(0);
 });
 
 test('ChangeConfigurationResponse does not generate outbound', function (): void {
@@ -382,10 +382,10 @@ test('ChangeConfigurationResponse does not generate outbound', function (): void
         'message_id' => 'msg_ccr01', 'payload' => ['keys' => [['key' => 'heartbeatInterval', 'value' => '60']]], 'status' => 'sent',
     ]);
 
-    $dispatcher->dispatch('stn_c0000d01', makeEnvelope('ChangeConfigurationResponse', 'msg_ccr01', 'Response', [
+    $dispatcher->dispatch('stn_c0000d01', makeEnvelope('ChangeConfiguration', 'msg_ccr01', 'Response', [
         'results' => [['key' => 'heartbeatInterval', 'status' => 'Accepted']],
     ]));
-    expect(MessageLog::where('station_id', 'stn_c0000d01')->where('action', 'ChangeConfigurationResponse')->where('direction', 'outbound')->count())->toBe(0);
+    expect(MessageLog::where('station_id', 'stn_c0000d01')->where('action', 'ChangeConfiguration')->where('direction', 'outbound')->count())->toBe(0);
 });
 
 test('GetConfigurationResponse does not generate outbound', function (): void {
@@ -396,10 +396,10 @@ test('GetConfigurationResponse does not generate outbound', function (): void {
         'message_id' => 'msg_gcr01', 'payload' => [], 'status' => 'sent',
     ]);
 
-    $dispatcher->dispatch('stn_c0000e01', makeEnvelope('GetConfigurationResponse', 'msg_gcr01', 'Response', [
+    $dispatcher->dispatch('stn_c0000e01', makeEnvelope('GetConfiguration', 'msg_gcr01', 'Response', [
         'configuration' => [['key' => 'heartbeatInterval', 'value' => '30', 'readonly' => false]],
     ]));
-    expect(MessageLog::where('station_id', 'stn_c0000e01')->where('action', 'GetConfigurationResponse')->where('direction', 'outbound')->count())->toBe(0);
+    expect(MessageLog::where('station_id', 'stn_c0000e01')->where('action', 'GetConfiguration')->where('direction', 'outbound')->count())->toBe(0);
 });
 
 // ---------------------------------------------------------------------------

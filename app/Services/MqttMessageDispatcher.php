@@ -40,34 +40,40 @@ use Illuminate\Support\Facades\Log;
 
 final class MqttMessageDispatcher
 {
-    /** @var array<string, class-string<OsppHandler>> */
+    /** @var array<string, array<string, class-string<OsppHandler>>> */
     private const HANDLER_MAP = [
-        'BootNotification' => BootNotificationHandler::class,
-        'Heartbeat' => HeartbeatHandler::class,
-        'StatusNotification' => StatusNotificationHandler::class,
-        'MeterValues' => MeterValuesHandler::class,
-        'DataTransfer' => DataTransferHandler::class,
-        'SecurityEvent' => SecurityEventHandler::class,
-        'SignCertificate' => SignCertificateHandler::class,
-        'StartServiceResponse' => StartServiceResponseHandler::class,
-        'StopServiceResponse' => StopServiceResponseHandler::class,
-        'ReserveBayResponse' => ReserveBayResponseHandler::class,
-        'CancelReservationResponse' => CancelReservationResponseHandler::class,
-        'ChangeConfigurationResponse' => ChangeConfigurationResponseHandler::class,
-        'GetConfigurationResponse' => GetConfigurationResponseHandler::class,
-        'ResetResponse' => ResetResponseHandler::class,
-        'UpdateFirmwareResponse' => UpdateFirmwareResponseHandler::class,
-        'GetDiagnosticsResponse' => GetDiagnosticsResponseHandler::class,
-        'SetMaintenanceModeResponse' => SetMaintenanceModeResponseHandler::class,
-        'TriggerMessageResponse' => TriggerMessageResponseHandler::class,
-        'UpdateServiceCatalogResponse' => UpdateServiceCatalogResponseHandler::class,
-        'CertificateInstallResponse' => CertificateInstallResponseHandler::class,
-        'TriggerCertificateRenewalResponse' => TriggerCertificateRenewalResponseHandler::class,
-        'AuthorizeOfflinePass' => AuthorizeOfflinePassHandler::class,
-        'TransactionEvent' => TransactionEventHandler::class,
-        'ConnectionLost' => ConnectionLostHandler::class,
-        'DiagnosticsNotification' => DiagnosticsNotificationHandler::class,
-        'FirmwareStatusNotification' => FirmwareStatusNotificationHandler::class,
+        'Request' => [
+            'BootNotification' => BootNotificationHandler::class,
+            'Heartbeat' => HeartbeatHandler::class,
+            'DataTransfer' => DataTransferHandler::class,
+            'SignCertificate' => SignCertificateHandler::class,
+            'AuthorizeOfflinePass' => AuthorizeOfflinePassHandler::class,
+            'TransactionEvent' => TransactionEventHandler::class,
+        ],
+        'Response' => [
+            'StartService' => StartServiceResponseHandler::class,
+            'StopService' => StopServiceResponseHandler::class,
+            'ReserveBay' => ReserveBayResponseHandler::class,
+            'CancelReservation' => CancelReservationResponseHandler::class,
+            'ChangeConfiguration' => ChangeConfigurationResponseHandler::class,
+            'GetConfiguration' => GetConfigurationResponseHandler::class,
+            'Reset' => ResetResponseHandler::class,
+            'UpdateFirmware' => UpdateFirmwareResponseHandler::class,
+            'GetDiagnostics' => GetDiagnosticsResponseHandler::class,
+            'SetMaintenanceMode' => SetMaintenanceModeResponseHandler::class,
+            'TriggerMessage' => TriggerMessageResponseHandler::class,
+            'UpdateServiceCatalog' => UpdateServiceCatalogResponseHandler::class,
+            'CertificateInstall' => CertificateInstallResponseHandler::class,
+            'TriggerCertificateRenewal' => TriggerCertificateRenewalResponseHandler::class,
+        ],
+        'Event' => [
+            'StatusNotification' => StatusNotificationHandler::class,
+            'MeterValues' => MeterValuesHandler::class,
+            'SecurityEvent' => SecurityEventHandler::class,
+            'ConnectionLost' => ConnectionLostHandler::class,
+            'DiagnosticsNotification' => DiagnosticsNotificationHandler::class,
+            'FirmwareStatusNotification' => FirmwareStatusNotificationHandler::class,
+        ],
     ];
 
     public function __construct(
@@ -160,7 +166,7 @@ final class MqttMessageDispatcher
             return;
         }
 
-        $handlerClass = self::HANDLER_MAP[$action] ?? null;
+        $handlerClass = self::HANDLER_MAP[$messageType][$action] ?? null;
         if ($handlerClass === null) {
             Log::info("No handler for action: {$action}");
 

@@ -25,7 +25,7 @@ test('marks command as responded', function (): void {
     $context = new HandlerContext(
         tenantId: $tenant->id,
         stationId: 'stn_tmr001',
-        action: 'TriggerMessageResponse',
+        action: 'TriggerMessage',
         messageId: 'msg_tmr001',
         messageType: 'Response',
         payload: ['status' => 'Accepted'],
@@ -58,7 +58,7 @@ test('handles NotImplemented status', function (): void {
     $context = new HandlerContext(
         tenantId: $tenant->id,
         stationId: 'stn_tmr002',
-        action: 'TriggerMessageResponse',
+        action: 'TriggerMessage',
         messageId: 'msg_tmr002',
         messageType: 'Response',
         payload: ['status' => 'NotImplemented'],

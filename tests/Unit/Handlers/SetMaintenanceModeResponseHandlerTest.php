@@ -29,7 +29,7 @@ test('Accepted with bayId sets bay to Unavailable', function (): void {
     $context = new HandlerContext(
         tenantId: $tenant->id,
         stationId: 'stn_mm01',
-        action: 'SetMaintenanceModeResponse',
+        action: 'SetMaintenanceMode',
         messageId: 'msg_mm001',
         messageType: 'Response',
         payload: ['status' => 'Accepted'],
@@ -68,7 +68,7 @@ test('Accepted with enabled=false sets bay Available', function (): void {
     $context = new HandlerContext(
         tenantId: $tenant->id,
         stationId: 'stn_mm02',
-        action: 'SetMaintenanceModeResponse',
+        action: 'SetMaintenanceMode',
         messageId: 'msg_mm002',
         messageType: 'Response',
         payload: ['status' => 'Accepted'],

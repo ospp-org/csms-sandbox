@@ -25,7 +25,7 @@ test('Accepted updates command to responded', function (): void {
     $context = new HandlerContext(
         tenantId: $tenant->id,
         stationId: 'stn_ufr001',
-        action: 'UpdateFirmwareResponse',
+        action: 'UpdateFirmware',
         messageId: 'msg_ufr001',
         messageType: 'Response',
         payload: ['status' => 'Accepted'],
@@ -49,7 +49,7 @@ test('handles missing command gracefully', function (): void {
     $context = new HandlerContext(
         tenantId: $tenant->id,
         stationId: 'stn_ufr002',
-        action: 'UpdateFirmwareResponse',
+        action: 'UpdateFirmware',
         messageId: 'msg_ufr_nomatch',
         messageType: 'Response',
         payload: ['status' => 'Accepted'],

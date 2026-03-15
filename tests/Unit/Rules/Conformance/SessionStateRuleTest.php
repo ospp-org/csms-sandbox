@@ -77,7 +77,7 @@ test('SessionStateRule passes for StopServiceResponse', function (): void {
     $context = new HandlerContext(
         tenantId: 'tenant-uuid',
         stationId: 'stn_ss000004',
-        action: 'StopServiceResponse',
+        action: 'StopService',
         messageId: 'msg_ss_004',
         messageType: 'Response',
         payload: ['status' => 'Accepted', 'actualDurationSeconds' => 300, 'creditsCharged' => 100],

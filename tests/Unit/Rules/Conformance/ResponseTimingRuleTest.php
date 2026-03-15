@@ -42,7 +42,7 @@ test('ResponseTimingRule passes when response is within timeout', function (): v
     $context = new HandlerContext(
         tenantId: $tenant->id,
         stationId: 'stn_rt000002',
-        action: 'ResetResponse',
+        action: 'Reset',
         messageId: 'msg_rt_002',
         messageType: 'Response',
         payload: ['status' => 'Accepted'],
@@ -70,7 +70,7 @@ test('ResponseTimingRule fails when response exceeds timeout', function (): void
     $context = new HandlerContext(
         tenantId: $tenant->id,
         stationId: 'stn_rt000003',
-        action: 'ResetResponse',
+        action: 'Reset',
         messageId: 'msg_rt_003',
         messageType: 'Response',
         payload: ['status' => 'Accepted'],

@@ -29,7 +29,7 @@ test('Accepted sets bay to Reserved', function (): void {
     $context = new HandlerContext(
         tenantId: $tenant->id,
         stationId: 'stn_reserve01',
-        action: 'ReserveBayResponse',
+        action: 'ReserveBay',
         messageId: 'msg_reserve_001',
         messageType: 'Response',
         payload: ['status' => 'Accepted'],
@@ -65,7 +65,7 @@ test('sets reservation in Redis', function (): void {
     $context = new HandlerContext(
         tenantId: $tenant->id,
         stationId: 'stn_reserve02',
-        action: 'ReserveBayResponse',
+        action: 'ReserveBay',
         messageId: 'msg_reserve_002',
         messageType: 'Response',
         payload: ['status' => 'Accepted'],
