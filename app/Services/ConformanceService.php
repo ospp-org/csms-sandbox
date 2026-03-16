@@ -108,6 +108,26 @@ final class ConformanceService
             ->where('protocol_version', $protocolVersion)
             ->get();
 
+        // Ensure all config actions are represented (as not_tested if missing from DB)
+        /** @var list<string> $configActions */
+        $configActions = config('conformance.actions', []);
+        $existingActions = $results->pluck('action')->toArray();
+
+        foreach ($configActions as $action) {
+            if (! in_array($action, $existingActions, true)) {
+                $results->push(new ConformanceResult([
+                    'tenant_id' => $tenantId,
+                    'protocol_version' => $protocolVersion,
+                    'action' => $action,
+                    'status' => 'not_tested',
+                    'last_tested_at' => null,
+                    'last_payload' => null,
+                    'error_details' => null,
+                    'behavior_checks' => null,
+                ]));
+            }
+        }
+
         return new ConformanceReport($results, $protocolVersion);
     }
 
