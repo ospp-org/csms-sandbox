@@ -41,6 +41,12 @@ final class BayTransitionRule implements ConformanceRule
         }
 
         $currentStatus = $state->getBayStatus($context->stationId, $bayNumber);
+
+        // Same state → same state is always valid (station re-confirming)
+        if ($newStatus === $currentStatus) {
+            return new RuleResult(true, 'bay_transition');
+        }
+
         $allowed = self::VALID_TRANSITIONS[$currentStatus] ?? [];
 
         if (! in_array($newStatus, $allowed, true)) {

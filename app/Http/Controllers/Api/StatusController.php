@@ -26,7 +26,7 @@ final class StatusController extends Controller
 
         return new JsonResponse([
             'status' => $allOk ? 'operational' : 'degraded',
-            'version' => config('app.version', '0.1.1'),
+            'version' => config('app.version'),
             'services' => $services,
         ], $allOk ? 200 : 503);
     }

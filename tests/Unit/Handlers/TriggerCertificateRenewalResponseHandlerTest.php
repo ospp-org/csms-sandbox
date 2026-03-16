@@ -25,7 +25,7 @@ test('updates command to responded', function (): void {
     $context = new HandlerContext(
         tenantId: $tenant->id,
         stationId: 'stn_tcrr001',
-        action: 'TriggerCertificateRenewalResponse',
+        action: 'TriggerCertificateRenewal',
         messageId: 'msg_tcrr001',
         messageType: 'Response',
         payload: ['status' => 'Accepted'],
@@ -49,7 +49,7 @@ test('works without pending command', function (): void {
     $context = new HandlerContext(
         tenantId: $tenant->id,
         stationId: 'stn_tcrr002',
-        action: 'TriggerCertificateRenewalResponse',
+        action: 'TriggerCertificateRenewal',
         messageId: 'msg_tcrr_nomatch',
         messageType: 'Response',
         payload: ['status' => 'Accepted'],

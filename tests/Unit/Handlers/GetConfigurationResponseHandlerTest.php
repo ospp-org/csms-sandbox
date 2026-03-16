@@ -26,7 +26,7 @@ test('Stores configuration in Redis', function (): void {
     $context = new HandlerContext(
         tenantId: $tenant->id,
         stationId: 'stn_getconf01',
-        action: 'GetConfigurationResponse',
+        action: 'GetConfiguration',
         messageId: 'msg_getconf_001',
         messageType: 'Response',
         payload: ['configuration' => [
@@ -55,7 +55,7 @@ test('Works without pending command', function (): void {
     $context = new HandlerContext(
         tenantId: $tenant->id,
         stationId: 'stn_getconf02',
-        action: 'GetConfigurationResponse',
+        action: 'GetConfiguration',
         messageId: 'msg_getconf_no_cmd',
         messageType: 'Response',
         payload: ['configuration' => [

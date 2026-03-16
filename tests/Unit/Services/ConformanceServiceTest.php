@@ -85,7 +85,7 @@ test('getReport returns correct scoring', function (): void {
 
     expect($report->passed)->toBe(2);
     expect($report->failed)->toBe(1);
-    expect($report->notTested)->toBe(1);
+    expect($report->notTested)->toBe(23); // 26 config actions - 3 tested
     expect($report->totalTested)->toBe(3);
     expect($report->percentage)->toBe(66.7);
 });

@@ -108,7 +108,36 @@ final class ConformanceService
             ->where('protocol_version', $protocolVersion)
             ->get();
 
-        return new ConformanceReport($results, $protocolVersion);
+        // Ensure all config actions are represented (as not_tested if missing from DB)
+        /** @var list<string> $configActions */
+        $configActions = config('conformance.actions', []);
+        $existingActions = $results->pluck('action')->toArray();
+
+        foreach ($configActions as $action) {
+            if (! in_array($action, $existingActions, true)) {
+                $results->push(new ConformanceResult([
+                    'tenant_id' => $tenantId,
+                    'protocol_version' => $protocolVersion,
+                    'action' => $action,
+                    'status' => 'not_tested',
+                    'last_tested_at' => null,
+                    'last_payload' => null,
+                    'error_details' => null,
+                    'behavior_checks' => null,
+                ]));
+            }
+        }
+
+        // Sort: recently tested first, not_tested last
+        $sorted = $results->sortBy(function (ConformanceResult $r) {
+            if ($r->last_tested_at === null) {
+                return '9999-99-99';
+            }
+
+            return (string) $r->last_tested_at;
+        }, SORT_REGULAR, true)->values();
+
+        return new ConformanceReport($sorted, $protocolVersion);
     }
 
     public function getActionDetail(string $tenantId, string $protocolVersion, string $action): ?ConformanceResult

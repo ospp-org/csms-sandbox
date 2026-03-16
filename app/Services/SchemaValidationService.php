@@ -18,8 +18,9 @@ final class SchemaValidationService
 
     /**
      * @param array<string, mixed> $payload
+     * @param ?string $rawPayloadJson Type-preserving JSON (from json_decode(false) round-trip)
      */
-    public function validate(string $action, string $messageType, array $payload): ValidationResult
+    public function validate(string $action, string $messageType, array $payload, ?string $rawPayloadJson = null): ValidationResult
     {
         $schemaPath = $this->resolveSchemaPath($action, $messageType);
 
@@ -27,7 +28,7 @@ final class SchemaValidationService
             return ValidationResult::skipped("No schema for {$action}/{$messageType}");
         }
 
-        return $this->doValidate($schemaPath, $payload);
+        return $this->doValidate($schemaPath, $payload, $rawPayloadJson);
     }
 
     public function validateOutbound(string $action, mixed $payload): ValidationResult
@@ -63,11 +64,16 @@ final class SchemaValidationService
 
     /**
      * @param array<string, mixed> $payload
+     * @param ?string $rawPayloadJson Type-preserving JSON string
      */
-    private function doValidate(string $schemaPath, array $payload): ValidationResult
+    private function doValidate(string $schemaPath, array $payload, ?string $rawPayloadJson = null): ValidationResult
     {
         $validator = $this->getValidator();
-        $data = self::toJsonObject($payload);
+        // When raw JSON is available, use it for type-accurate validation
+        // (json_decode(false) preserves [] as array and {} as object)
+        $data = $rawPayloadJson !== null
+            ? json_decode($rawPayloadJson, false)
+            : self::toJsonObject($payload);
 
         $content = file_get_contents($schemaPath);
 

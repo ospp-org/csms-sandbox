@@ -25,7 +25,7 @@ test('updates command to responded', function (): void {
     $context = new HandlerContext(
         tenantId: $tenant->id,
         stationId: 'stn_uscr001',
-        action: 'UpdateServiceCatalogResponse',
+        action: 'UpdateServiceCatalog',
         messageId: 'msg_uscr001',
         messageType: 'Response',
         payload: ['status' => 'Accepted'],
@@ -49,7 +49,7 @@ test('acknowledges when no command found', function (): void {
     $context = new HandlerContext(
         tenantId: $tenant->id,
         stationId: 'stn_uscr002',
-        action: 'UpdateServiceCatalogResponse',
+        action: 'UpdateServiceCatalog',
         messageId: 'msg_uscr_nomatch',
         messageType: 'Response',
         payload: ['status' => 'Accepted'],

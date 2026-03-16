@@ -144,7 +144,7 @@ test('StartServiceResponse through webhook pipeline updates bay status', functio
     $this->postJson('/internal/mqtt/webhook', [
         'topic' => 'ospp/v1/stations/stn_a0000003/to-server',
         'payload' => json_encode([
-            'action' => 'StartServiceResponse',
+            'action' => 'StartService',
             'messageId' => 'msg_ss_001',
             'messageType' => 'Response',
             'source' => 'Station',
@@ -156,7 +156,7 @@ test('StartServiceResponse through webhook pipeline updates bay status', functio
 
     $this->assertDatabaseHas('message_log', [
         'station_id' => 'stn_a0000003',
-        'action' => 'StartServiceResponse',
+        'action' => 'StartService',
         'direction' => 'inbound',
     ]);
 
@@ -189,7 +189,7 @@ test('ResetResponse through webhook pipeline updates lifecycle', function (): vo
     $this->postJson('/internal/mqtt/webhook', [
         'topic' => 'ospp/v1/stations/stn_a0000004/to-server',
         'payload' => json_encode([
-            'action' => 'ResetResponse',
+            'action' => 'Reset',
             'messageId' => 'msg_rs_001',
             'messageType' => 'Response',
             'source' => 'Station',
@@ -201,7 +201,7 @@ test('ResetResponse through webhook pipeline updates lifecycle', function (): vo
 
     $this->assertDatabaseHas('message_log', [
         'station_id' => 'stn_a0000004',
-        'action' => 'ResetResponse',
+        'action' => 'Reset',
         'direction' => 'inbound',
     ]);
 

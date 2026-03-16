@@ -28,7 +28,7 @@ test('Accepted sets lifecycle to resetting', function (): void {
     $context = new HandlerContext(
         tenantId: $tenant->id,
         stationId: 'stn_reset01',
-        action: 'ResetResponse',
+        action: 'Reset',
         messageId: 'msg_reset_001',
         messageType: 'Response',
         payload: ['status' => 'Accepted'],
@@ -63,7 +63,7 @@ test('Rejected keeps lifecycle unchanged', function (): void {
     $context = new HandlerContext(
         tenantId: $tenant->id,
         stationId: 'stn_reset02',
-        action: 'ResetResponse',
+        action: 'Reset',
         messageId: 'msg_reset_002',
         messageType: 'Response',
         payload: ['status' => 'Rejected'],

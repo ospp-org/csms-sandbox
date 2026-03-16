@@ -25,7 +25,7 @@ test('updates command status on response', function (): void {
     $context = new HandlerContext(
         tenantId: $tenant->id,
         stationId: 'stn_udr001',
-        action: 'GetDiagnosticsResponse',
+        action: 'GetDiagnostics',
         messageId: 'msg_udr001',
         messageType: 'Response',
         payload: ['status' => 'Accepted'],
@@ -49,7 +49,7 @@ test('acknowledges without pending command', function (): void {
     $context = new HandlerContext(
         tenantId: $tenant->id,
         stationId: 'stn_udr002',
-        action: 'GetDiagnosticsResponse',
+        action: 'GetDiagnostics',
         messageId: 'msg_udr_nomatch',
         messageType: 'Response',
         payload: ['status' => 'Accepted'],

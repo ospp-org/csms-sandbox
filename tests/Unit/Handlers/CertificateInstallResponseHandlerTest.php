@@ -25,7 +25,7 @@ test('updates command to responded on Accepted', function (): void {
     $context = new HandlerContext(
         tenantId: $tenant->id,
         stationId: 'stn_cir001',
-        action: 'CertificateInstallResponse',
+        action: 'CertificateInstall',
         messageId: 'msg_cir001',
         messageType: 'Response',
         payload: ['status' => 'Accepted'],
@@ -58,7 +58,7 @@ test('handles Rejected status', function (): void {
     $context = new HandlerContext(
         tenantId: $tenant->id,
         stationId: 'stn_cir002',
-        action: 'CertificateInstallResponse',
+        action: 'CertificateInstall',
         messageId: 'msg_cir002',
         messageType: 'Response',
         payload: ['status' => 'Rejected'],

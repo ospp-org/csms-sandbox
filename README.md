@@ -1,6 +1,6 @@
 # OSPP CSMS Sandbox
 
-**Version: 0.1.0** | **Protocol: OSPP v0.1.0**
+**Version: 0.2.0** | **Protocol: OSPP v0.1.0**
 
 Hosted, multi-tenant OSPP protocol testing environment.
 Firmware developers connect their station via MQTT, see
@@ -14,7 +14,7 @@ implementation against the OSPP specification.
 ## Features
 
 - Multi-tenant MQTT isolation (per-tenant credentials + EMQX ACL)
-- 21 OSPP protocol handlers with full schema validation
+- 26 OSPP protocol handlers with full schema validation
 - Real-time message inspector (WebSocket via Laravel Reverb)
 - Manual command sender (14 outbound OSPP commands)
 - Conformance scoring with behavior validation (7 rules)
@@ -53,7 +53,17 @@ See docs/ for complete implementation documentation:
 docker compose exec app php artisan test --parallel
 ```
 
-170 tests, 452 assertions
+233 tests, 686 assertions
+
+## Station Simulator Compatibility
+
+The OSPP Station Simulator (ospp-org/station-simulator) uses MQTT 3.1.1
+(php-mqtt/client limitation). OSPP spec requires MQTT 5.0.
+Transport-level MQTT 5.0 features (Will Delay Interval, Session Expiry,
+Message Expiry) are not available in simulator testing.
+
+All 26 OSPP protocol actions are fully testable regardless.
+ConnectionLost can be tested via `php simulator send-event ConnectionLost`.
 
 ## Related
 

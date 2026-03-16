@@ -7,6 +7,7 @@ namespace App\Jobs;
 use App\Services\MqttMessageDispatcher;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Support\Facades\Log;
 
 final class ProcessMqttMessage implements ShouldQueue
@@ -24,6 +25,18 @@ final class ProcessMqttMessage implements ShouldQueue
         $this->onQueue('mqtt-messages');
     }
 
+    /**
+     * @return array<int, object>
+     */
+    public function middleware(): array
+    {
+        return [
+            (new WithoutOverlapping($this->stationId))
+                ->releaseAfter(30)
+                ->expireAfter(60),
+        ];
+    }
+
     public function handle(MqttMessageDispatcher $dispatcher): void
     {
         $envelope = json_decode($this->payload, true);
@@ -34,6 +47,6 @@ final class ProcessMqttMessage implements ShouldQueue
             return;
         }
 
-        $dispatcher->dispatch($this->stationId, $envelope);
+        $dispatcher->dispatch($this->stationId, $envelope, $this->payload);
     }
 }

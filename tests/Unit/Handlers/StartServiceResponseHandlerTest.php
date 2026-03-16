@@ -29,7 +29,7 @@ test('Accepted sets bay to Occupied and records session', function (): void {
     $context = new HandlerContext(
         tenantId: $tenant->id,
         stationId: 'stn_start01',
-        action: 'StartServiceResponse',
+        action: 'StartService',
         messageId: 'msg_start_001',
         messageType: 'Response',
         payload: ['status' => 'Accepted'],
@@ -68,7 +68,7 @@ test('Rejected does not change bay state', function (): void {
     $context = new HandlerContext(
         tenantId: $tenant->id,
         stationId: 'stn_start02',
-        action: 'StartServiceResponse',
+        action: 'StartService',
         messageId: 'msg_start_002',
         messageType: 'Response',
         payload: ['status' => 'Rejected'],

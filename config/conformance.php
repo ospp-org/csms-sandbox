@@ -10,7 +10,29 @@ return [
     |--------------------------------------------------------------------------
     */
     'heartbeat_drift_tolerance' => 0.10, // 10%
-    'command_response_timeout' => 30,     // seconds
+    'command_response_timeout' => 30,     // fallback (seconds)
+    'response_timeouts' => [
+        'BootNotification' => 30,
+        'Heartbeat' => 30,
+        'AuthorizeOfflinePass' => 15,
+        'StartService' => 10,
+        'StopService' => 10,
+        'ReserveBay' => 5,
+        'CancelReservation' => 5,
+        'TransactionEvent' => 60,
+        'ChangeConfiguration' => 60,
+        'GetConfiguration' => 30,
+        'Reset' => 30,
+        'UpdateFirmware' => 300,
+        'GetDiagnostics' => 300,
+        'SetMaintenanceMode' => 30,
+        'TriggerMessage' => 10,
+        'UpdateServiceCatalog' => 30,
+        'SignCertificate' => 30,
+        'CertificateInstall' => 30,
+        'TriggerCertificateRenewal' => 10,
+        'DataTransfer' => 30,
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -23,26 +45,22 @@ return [
         'Heartbeat',
         'StatusNotification',
         'DataTransfer',
-        // Sessions (5)
+        // Sessions (3)
         'MeterValues',
         'StartService',
-        'StartServiceResponse',
         'StopService',
-        'StopServiceResponse',
-        // Reservations (4)
+        // Reservations (2)
         'ReserveBay',
-        'ReserveBayResponse',
         'CancelReservation',
-        'CancelReservationResponse',
         // Device Management (8)
-        'ChangeConfigurationResponse',
-        'GetConfigurationResponse',
-        'ResetResponse',
-        'UpdateFirmwareResponse',
-        'GetDiagnosticsResponse',
-        'SetMaintenanceModeResponse',
-        'TriggerMessageResponse',
-        'UpdateServiceCatalogResponse',
+        'ChangeConfiguration',
+        'GetConfiguration',
+        'Reset',
+        'UpdateFirmware',
+        'GetDiagnostics',
+        'SetMaintenanceMode',
+        'TriggerMessage',
+        'UpdateServiceCatalog',
         // Offline (2)
         'AuthorizeOfflinePass',
         'TransactionEvent',
@@ -50,12 +68,11 @@ return [
         'ConnectionLost',
         'DiagnosticsNotification',
         'FirmwareStatusNotification',
-        // Security (5)
+        // Security (4)
         'SecurityEvent',
         'SignCertificate',
         'CertificateInstall',
-        'CertificateInstallResponse',
-        'TriggerCertificateRenewalResponse',
+        'TriggerCertificateRenewal',
     ],
 
     /*
@@ -65,20 +82,19 @@ return [
     */
     'categories' => [
         'core' => ['BootNotification', 'Heartbeat', 'StatusNotification', 'DataTransfer'],
-        'sessions' => ['MeterValues', 'StartService', 'StartServiceResponse', 'StopService', 'StopServiceResponse'],
-        'reservations' => ['ReserveBay', 'ReserveBayResponse', 'CancelReservation', 'CancelReservationResponse'],
+        'sessions' => ['MeterValues', 'StartService', 'StopService'],
+        'reservations' => ['ReserveBay', 'CancelReservation'],
         'device_management' => [
-            'ChangeConfigurationResponse', 'GetConfigurationResponse',
-            'ResetResponse', 'UpdateFirmwareResponse',
-            'GetDiagnosticsResponse', 'SetMaintenanceModeResponse',
-            'TriggerMessageResponse', 'UpdateServiceCatalogResponse',
+            'ChangeConfiguration', 'GetConfiguration',
+            'Reset', 'UpdateFirmware',
+            'GetDiagnostics', 'SetMaintenanceMode',
+            'TriggerMessage', 'UpdateServiceCatalog',
         ],
         'offline' => ['AuthorizeOfflinePass', 'TransactionEvent'],
         'notifications' => ['ConnectionLost', 'DiagnosticsNotification', 'FirmwareStatusNotification'],
         'security' => [
             'SecurityEvent', 'SignCertificate',
-            'CertificateInstall', 'CertificateInstallResponse',
-            'TriggerCertificateRenewalResponse',
+            'CertificateInstall', 'TriggerCertificateRenewal',
         ],
     ],
 
