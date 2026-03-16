@@ -140,6 +140,48 @@ final class StationStateService
         Redis::hset(self::PREFIX . $stationId, 'last_heartbeat', (string) $timestamp);
     }
 
+    public function getFirmwareStatus(string $stationId): string
+    {
+        return (string) Redis::hget(self::PREFIX . $stationId, 'firmware_status') ?: '';
+    }
+
+    public function setFirmwareStatus(string $stationId, string $status): void
+    {
+        Redis::hset(self::PREFIX . $stationId, 'firmware_status', $status);
+    }
+
+    public function getDiagnosticsStatus(string $stationId): string
+    {
+        return (string) Redis::hget(self::PREFIX . $stationId, 'diagnostics_status') ?: '';
+    }
+
+    public function setDiagnosticsStatus(string $stationId, string $status): void
+    {
+        Redis::hset(self::PREFIX . $stationId, 'diagnostics_status', $status);
+    }
+
+    public function getLastTxCounter(string $stationId): int
+    {
+        return (int) Redis::hget(self::PREFIX . $stationId, 'last_tx_counter') ?: 0;
+    }
+
+    public function setLastTxCounter(string $stationId, int $counter): void
+    {
+        Redis::hset(self::PREFIX . $stationId, 'last_tx_counter', (string) $counter);
+    }
+
+    public function getLastMeterTimestamp(string $stationId, string $bayId): ?int
+    {
+        $ts = Redis::hget(self::PREFIX . $stationId . ':meters', $bayId);
+
+        return $ts ? (int) $ts : null;
+    }
+
+    public function setLastMeterTimestamp(string $stationId, string $bayId, int $timestamp): void
+    {
+        Redis::hset(self::PREFIX . $stationId . ':meters', $bayId, (string) $timestamp);
+    }
+
     public function resetState(string $stationId, int $bayCount): void
     {
         Redis::hset(self::PREFIX . $stationId, 'lifecycle', 'online');

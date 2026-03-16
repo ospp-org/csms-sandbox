@@ -12,9 +12,16 @@ use App\Dto\ValidationResult;
 use App\Models\ConformanceResult;
 use App\Conformance\Rules\BayTransitionRule;
 use App\Conformance\Rules\BootFirstRule;
+use App\Conformance\Rules\CertificateExpiryRule;
+use App\Conformance\Rules\ConfigurationPersistenceRule;
+use App\Conformance\Rules\DiagnosticsUploadRule;
 use App\Conformance\Rules\EnvelopeFormatRule;
+use App\Conformance\Rules\FirmwareUpdateSequenceRule;
 use App\Conformance\Rules\HeartbeatTimingRule;
 use App\Conformance\Rules\IdempotencyRule;
+use App\Conformance\Rules\MeterValuesFrequencyRule;
+use App\Conformance\Rules\OfflineTransactionRule;
+use App\Conformance\Rules\ReservationExpiryRule;
 use App\Conformance\Rules\ResponseTimingRule;
 use App\Conformance\Rules\SessionStateRule;
 
@@ -34,6 +41,13 @@ final class ConformanceService
             new ResponseTimingRule(),
             new IdempotencyRule(),
             new EnvelopeFormatRule(),
+            new FirmwareUpdateSequenceRule(),
+            new DiagnosticsUploadRule(),
+            new OfflineTransactionRule(),
+            new MeterValuesFrequencyRule(),
+            new ReservationExpiryRule(),
+            new CertificateExpiryRule(),
+            new ConfigurationPersistenceRule(),
         ];
     }
 

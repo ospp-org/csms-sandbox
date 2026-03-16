@@ -131,7 +131,7 @@ test('evaluate runs all rules and records result', function (): void {
     $results = $service->evaluate($context, ValidationResult::valid());
 
     expect($results)->toBeArray();
-    expect(count($results))->toBe(7);
+    expect(count($results))->toBe(14);
 
     $this->assertDatabaseHas('conformance_results', [
         'tenant_id' => $tenant->id,
