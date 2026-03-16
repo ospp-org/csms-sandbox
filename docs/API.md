@@ -1,780 +1,374 @@
-# CSMS Sandbox — API Specification
+# API Reference
 
----
-
-## Base URL
-
-```
-https://csms-sandbox.ospp-standard.org/api/v1
-```
+Base URL: `https://csms-sandbox.ospp-standard.org/api/v1`
 
 ## Authentication
 
-JWT (ES256) via `Authorization: Bearer {token}` header.
+JWT Bearer token (ES256). Include in header: `Authorization: Bearer <token>`
 
-Token obtained via `/auth/login` or `/auth/google`.
-Token expiry: 24 hours.
-Refresh: re-login (no refresh token for v1).
-
-## Error Format
-
-All errors return consistent JSON:
-
-```json
-{
-    "error": "VALIDATION_ERROR",
-    "message": "Human readable description",
-    "details": {
-        "field": ["Error for this field"]
-    }
-}
-```
-
-HTTP status codes:
-- `200` — success
-- `201` — created
-- `400` — validation error
-- `401` — unauthorized
-- `403` — forbidden
-- `404` — not found
-- `422` — unprocessable entity
-- `429` — rate limited
-- `500` — server error
-
-## Rate Limits
-
-- Authentication: 30 requests/minute per IP
-- API: 60 requests/minute per tenant
-- MQTT: 100 messages/minute per tenant
-
-Rate limit headers on every response:
-```
-X-RateLimit-Limit: 60
-X-RateLimit-Remaining: 57
-X-RateLimit-Reset: 1709986200
-```
+Tokens expire after 1 hour. Re-authenticate via login.
 
 ---
 
-## 1. Authentication
+## Auth Endpoints
 
 ### POST /auth/register
 
-Create a new tenant account.
+Create a new tenant account with auto-provisioned MQTT station.
+
+**Auth:** None
+**Rate limit:** 5 requests/minute per IP
 
 **Request:**
 ```json
 {
-    "name": "John Doe",
-    "email": "john@example.com",
-    "password": "min8characters",
-    "password_confirmation": "min8characters"
+  "name": "My Company",
+  "email": "dev@example.com",
+  "password": "securepass123",
+  "password_confirmation": "securepass123"
 }
 ```
-
-**Validation:**
-- `name`: required, string, max 255
-- `email`: required, email, unique
-- `password`: required, min 8, confirmed
 
 **Response (201):**
 ```json
 {
-    "token": "eyJ...",
-    "tenant": {
-        "id": "uuid",
-        "name": "John Doe",
-        "email": "john@example.com",
-        "protocol_version": "0.1.0",
-        "validation_mode": "strict"
-    },
-    "station": {
-        "station_id": "stn_00000001",
-        "mqtt_host": "csms-sandbox.ospp-standard.org",
-        "mqtt_port": 8883,
-        "mqtt_username": "sandbox_a1b2c3d4e5f6g7h8",
-        "mqtt_password": "plain-text-shown-once"
-    }
+  "token": "eyJ...",
+  "tenant": {
+    "id": 1,
+    "name": "My Company",
+    "email": "dev@example.com",
+    "protocol_version": "0.1.0",
+    "validation_mode": "strict"
+  },
+  "station": {
+    "station_id": "stn_a1b2c3d4e5f6",
+    "mqtt_host": "csms-sandbox.ospp-standard.org",
+    "mqtt_port": 8883,
+    "mqtt_username": "stn_a1b2c3d4e5f6",
+    "mqtt_password": "generated-password"
+  }
 }
 ```
 
-On register, station is auto-provisioned. MQTT password is shown once in this response. Tenant must save it.
-
----
+**Errors:**
+- `422`: Validation error (email taken, password too short)
+- `429`: Rate limited
 
 ### POST /auth/login
 
+**Auth:** None
+**Rate limit:** 5 requests/minute per IP
+
 **Request:**
 ```json
 {
-    "email": "john@example.com",
-    "password": "min8characters"
+  "email": "dev@example.com",
+  "password": "securepass123"
 }
 ```
 
 **Response (200):**
 ```json
 {
-    "token": "eyJ...",
-    "tenant": {
-        "id": "uuid",
-        "name": "John Doe",
-        "email": "john@example.com",
-        "protocol_version": "0.1.0",
-        "validation_mode": "strict"
-    }
+  "token": "eyJ...",
+  "tenant": {
+    "id": 1,
+    "name": "My Company",
+    "email": "dev@example.com",
+    "protocol_version": "0.1.0",
+    "validation_mode": "strict"
+  }
 }
 ```
 
-**Error (401):**
-```json
-{
-    "error": "INVALID_CREDENTIALS",
-    "message": "Email or password is incorrect"
-}
-```
-
----
-
-### POST /auth/google
-
-Google OAuth login/register.
-
-**Request:**
-```json
-{
-    "id_token": "google-oauth-id-token"
-}
-```
-
-**Response (200):** Same as login. If tenant doesn't exist, auto-creates (same as register but without password).
-
----
+**Errors:**
+- `401`: `{"error": "INVALID_CREDENTIALS", "message": "Email or password is incorrect"}`
+- `429`: Rate limited
 
 ### POST /auth/logout
 
-Requires auth.
+**Auth:** JWT Bearer
 
 **Response (200):**
 ```json
-{
-    "message": "Logged out"
-}
+{"message": "Logged out"}
 ```
 
 ---
 
-### GET /auth/me
-
-Requires auth.
-
-**Response (200):**
-```json
-{
-    "id": "uuid",
-    "name": "John Doe",
-    "email": "john@example.com",
-    "protocol_version": "0.1.0",
-    "validation_mode": "strict",
-    "created_at": "2026-03-01T10:00:00.000Z"
-}
-```
-
----
-
-## 2. Station
+## Station Endpoints
 
 ### GET /station
 
-Get station info and MQTT credentials.
+Get station configuration and MQTT connection details.
+
+**Auth:** JWT Bearer
 
 **Response (200):**
 ```json
 {
-    "station_id": "stn_00000001",
-    "mqtt": {
-        "host": "csms-sandbox.ospp-standard.org",
-        "port_tls": 8883,
-        "port_plain": 1883,
-        "username": "sandbox_a1b2c3d4e5f6g7h8",
-        "password_available": true
-    },
-    "topics": {
-        "publish": "ospp/v1/stations/stn_00000001/to-server",
-        "subscribe": "ospp/v1/stations/stn_00000001/to-station"
-    },
-    "status": {
-        "connected": true,
-        "last_connected_at": "2026-03-09T10:00:00.000Z",
-        "last_boot_at": "2026-03-09T10:00:05.000Z",
-        "firmware_version": "1.0.0",
-        "station_model": "WashPro 5000",
-        "station_vendor": "CSMS Dev",
-        "bay_count": 4
-    },
-    "protocol_version": "0.1.0"
+  "station_id": "stn_a1b2c3d4e5f6",
+  "mqtt": {
+    "host": "csms-sandbox.ospp-standard.org",
+    "port_tls": 8883,
+    "port_plain": 1883,
+    "username": "stn_a1b2c3d4e5f6",
+    "password_available": true
+  },
+  "topics": {
+    "publish": "ospp/v1/stations/stn_a1b2c3d4e5f6/to-server",
+    "subscribe": "ospp/v1/stations/stn_a1b2c3d4e5f6/to-station"
+  },
+  "status": {
+    "connected": false,
+    "last_connected_at": null,
+    "firmware_version": null,
+    "station_model": null,
+    "station_vendor": null,
+    "bay_count": 0
+  },
+  "protocol_version": "0.1.0"
 }
 ```
-
-Note: `mqtt.password_available` indicates if password can be retrieved. Always true (encrypted at rest). Use regenerate to get new one.
-
----
 
 ### POST /station/regenerate-password
 
-Generate new MQTT password. Old password stops working immediately.
+Rotate MQTT password. Station must reconnect with new password.
+
+**Auth:** JWT Bearer
 
 **Response (200):**
 ```json
 {
-    "mqtt_password": "new-plain-text-password",
-    "message": "Password regenerated. Old password is now invalid. Station must reconnect."
+  "mqtt_password": "new-generated-password",
+  "message": "Password regenerated. Old password is now invalid. Station must reconnect."
 }
 ```
-
----
 
 ### GET /station/status
 
-Real-time connection status.
+Real-time station state from Redis.
+
+**Auth:** JWT Bearer
 
 **Response (200):**
 ```json
 {
-    "connected": true,
-    "lifecycle": "online",
-    "last_heartbeat": "2026-03-09T10:05:30.000Z",
-    "bays": [
-        {
-            "bay_number": 1,
-            "status": "available",
-            "session_id": null,
-            "reservation_id": null
-        },
-        {
-            "bay_number": 2,
-            "status": "occupied",
-            "session_id": "sess_abc123",
-            "reservation_id": null
-        }
-    ]
+  "connected": true,
+  "lifecycle": "online",
+  "last_heartbeat": "2026-03-16T10:01:00.000Z",
+  "bays": [
+    {"bay_number": 1, "status": "Available", "session_id": null, "reservation_id": null},
+    {"bay_number": 2, "status": "Occupied", "session_id": "sess_001", "reservation_id": null}
+  ]
 }
 ```
 
 ---
 
-## 3. Messages
-
-### GET /messages
-
-Message history, paginated.
-
-**Query params:**
-
-| Param | Type | Default | Description |
-|-------|------|---------|-------------|
-| `page` | int | 1 | Page number |
-| `per_page` | int | 50 | Items per page (max 100) |
-| `action` | string | — | Filter by action (e.g., `BootNotification`) |
-| `direction` | string | — | `inbound` or `outbound` |
-| `schema_valid` | bool | — | `true` or `false` |
-| `from` | datetime | — | ISO 8601 start time |
-| `to` | datetime | — | ISO 8601 end time |
-| `search` | string | — | Search in messageId or payload |
-
-**Response (200):**
-```json
-{
-    "data": [
-        {
-            "id": 12345,
-            "direction": "inbound",
-            "action": "BootNotification",
-            "message_id": "msg_abc123",
-            "message_type": "Request",
-            "payload": { ... },
-            "schema_valid": true,
-            "validation_errors": null,
-            "processing_time_ms": 45,
-            "created_at": "2026-03-09T10:00:05.123Z"
-        }
-    ],
-    "meta": {
-        "current_page": 1,
-        "per_page": 50,
-        "total": 234,
-        "last_page": 5
-    }
-}
-```
-
----
-
-### GET /messages/{id}
-
-Single message with full detail.
-
-**Response (200):**
-```json
-{
-    "id": 12345,
-    "direction": "inbound",
-    "action": "BootNotification",
-    "message_id": "msg_abc123",
-    "message_type": "Request",
-    "payload": {
-        "action": "BootNotification",
-        "messageId": "msg_abc123",
-        "messageType": "Request",
-        "source": "Station",
-        "protocolVersion": "0.1.0",
-        "timestamp": "2026-03-09T10:00:05.000Z",
-        "payload": {
-            "stationModel": "WashPro 5000",
-            "stationVendor": "CSMS Dev",
-            "firmwareVersion": "1.0.0",
-            "bayCount": 4
-        }
-    },
-    "schema_valid": true,
-    "validation_errors": null,
-    "processing_time_ms": 45,
-    "created_at": "2026-03-09T10:00:05.123Z"
-}
-```
-
----
-
-## 4. Commands
+## Command Endpoints
 
 ### POST /commands/{action}
 
-Send a command to the connected station.
+Send an OSPP command to the connected station.
 
-**URL param:** `action` — one of: `StartService`, `StopService`, `ReserveBay`, `CancelReservation`, `ChangeConfiguration`, `GetConfiguration`, `Reset`, `UpdateFirmware`, `UploadDiagnostics`, `SetMaintenanceMode`, `TriggerMessage`, `UpdateServiceCatalog`, `CertificateInstall`, `TriggerCertificateRenewal`
+**Auth:** JWT Bearer
 
-**Request body varies by action. Examples:**
+**Actions:** StartService, StopService, ReserveBay, CancelReservation, Reset, ChangeConfiguration, GetConfiguration, UpdateFirmware, GetDiagnostics, SetMaintenanceMode, TriggerMessage, UpdateServiceCatalog, CertificateInstall, TriggerCertificateRenewal
 
-#### StartService
+**Request:** Action-specific JSON body (see schema endpoint for fields).
+
+**Example (Reset):**
 ```json
-{
-    "bayId": "bay_00000001",
-    "serviceId": "svc_wash_basic",
-    "sessionId": "sess_auto_generated"
-}
-```
-If `sessionId` omitted, auto-generated.
-
-#### Reset
-```json
-{
-    "resetType": "Soft"
-}
+{"type": "Soft"}
 ```
 
-#### ChangeConfiguration
+**Response (202):**
 ```json
 {
-    "keys": {
-        "heartbeatInterval": "60",
-        "meterValueSampleInterval": "10"
-    }
+  "command_id": 42,
+  "message_id": "cmd_a1b2c3d4",
+  "status": "sent"
 }
 ```
 
-#### GetConfiguration
-```json
-{
-    "requestedKeys": ["heartbeatInterval", "meterValueSampleInterval"]
-}
-```
-If `requestedKeys` omitted, requests all keys.
-
-#### UpdateFirmware
-```json
-{
-    "firmwareUrl": "https://firmware.example.com/v2.0.0.bin",
-    "version": "2.0.0"
-}
-```
-
-**Response (200):**
-```json
-{
-    "status": "sent",
-    "command_id": "uuid",
-    "message_id": "msg_cmd_abc123",
-    "action": "StartService",
-    "message": "Command sent to station. Waiting for response."
-}
-```
-
-**Error — station not connected (400):**
-```json
-{
-    "error": "STATION_NOT_CONNECTED",
-    "message": "Station is not connected. Connect via MQTT first."
-}
-```
-
----
+**Errors:**
+- `400`: `{"error": "INVALID_ACTION"}`
+- `404`: `{"error": "NO_STATION"}`
+- `409`: `{"error": "STATION_NOT_CONNECTED"}`
+- `422`: `{"error": "VALIDATION_ERROR", "validation_errors": [...]}`
 
 ### GET /commands/history
 
-Command history with responses.
+Last 50 commands for this tenant.
 
-**Query params:** `page`, `per_page`, `action`, `status` (`sent`, `responded`, `timeout`)
+**Auth:** JWT Bearer
 
 **Response (200):**
 ```json
 {
-    "data": [
-        {
-            "id": "uuid",
-            "action": "StartService",
-            "payload": { ... },
-            "status": "responded",
-            "response_payload": {
-                "status": "Accepted"
-            },
-            "response_time_ms": 230,
-            "created_at": "2026-03-09T10:30:00.000Z",
-            "response_received_at": "2026-03-09T10:30:00.230Z"
-        }
-    ],
-    "meta": { ... }
+  "commands": [
+    {
+      "id": 42,
+      "action": "Reset",
+      "message_id": "cmd_a1b2c3d4",
+      "status": "responded",
+      "payload": {"type": "Soft"},
+      "response_payload": {"status": "Accepted"},
+      "response_received_at": "2026-03-16T10:01:05.000Z",
+      "created_at": "2026-03-16T10:01:00.000Z"
+    }
+  ]
 }
 ```
-
----
 
 ### GET /commands/{action}/schema
 
-Get JSON Schema for command parameters. Used by dashboard to auto-generate forms.
+Get JSON Schema for a command's request payload.
+
+**Auth:** JWT Bearer
 
 **Response (200):**
 ```json
 {
-    "action": "StartService",
-    "schema": {
-        "type": "object",
-        "required": ["bayId", "serviceId"],
-        "properties": {
-            "bayId": {
-                "type": "string",
-                "pattern": "^bay_[a-f0-9]{8,}$"
-            },
-            "serviceId": {
-                "type": "string",
-                "pattern": "^svc_[a-z0-9_]+$"
-            },
-            "sessionId": {
-                "type": "string",
-                "pattern": "^sess_[a-f0-9]{16,}$",
-                "description": "Auto-generated if omitted"
-            }
-        }
+  "action": "Reset",
+  "schema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "required": ["type"],
+    "properties": {
+      "type": {"type": "string", "enum": ["Soft", "Hard"]}
     }
+  }
 }
 ```
 
+**Errors:**
+- `404`: `{"error": "UNKNOWN_ACTION", "message": "No schema for action: ..."}`
+
 ---
 
-## 5. Conformance
+## Conformance Endpoints
 
 ### GET /conformance
 
 Full conformance report.
 
+**Auth:** JWT Bearer
+
 **Response (200):**
 ```json
 {
-    "protocol_version": "0.1.0",
-    "score": {
-        "passed": 18,
-        "failed": 4,
-        "partial": 0,
-        "not_tested": 4,
-        "total_tested": 22,
-        "percentage": 81.8
-    },
-    "categories": {
-        "core": { "passed": 4, "total": 4, "percentage": 100 },
-        "sessions": { "passed": 3, "total": 4, "percentage": 75 },
-        "reservations": { "passed": 2, "total": 2, "percentage": 100 },
-        "device_management": { "passed": 5, "total": 7, "percentage": 71.4 },
-        "security": { "passed": 4, "total": 5, "percentage": 80 }
-    },
-    "results": [
-        {
-            "action": "BootNotification",
-            "category": "core",
-            "status": "passed",
-            "last_tested_at": "2026-03-09T10:00:05.000Z",
-            "schema_valid": true,
-            "behavior_checks": [
-                { "rule": "boot_first", "passed": true },
-                { "rule": "required_fields", "passed": true }
-            ]
-        },
-        {
-            "action": "MeterValues",
-            "category": "sessions",
-            "status": "failed",
-            "last_tested_at": "2026-03-09T10:31:00.000Z",
-            "schema_valid": false,
-            "error_details": [
-                {
-                    "path": "/payload/readings/0/value",
-                    "message": "Must be number, got string",
-                    "expected": "number",
-                    "actual": "string"
-                }
-            ],
-            "behavior_checks": [
-                { "rule": "session_active", "passed": true },
-                { "rule": "meter_monotonic", "passed": false, "detail": "Value decreased from 150 to 120" }
-            ]
-        }
-    ]
+  "protocol_version": "0.1.0",
+  "score": {
+    "passed": 15,
+    "failed": 2,
+    "partial": 1,
+    "not_tested": 8,
+    "total_tested": 18,
+    "percentage": 83.3
+  },
+  "categories": {
+    "core": {"passed": 4, "total": 4, "percentage": 100.0},
+    "sessions": {"passed": 2, "total": 3, "percentage": 66.7}
+  },
+  "results": [
+    {
+      "action": "BootNotification",
+      "status": "passed",
+      "last_tested_at": "2026-03-16T10:00:00.000Z",
+      "error_details": null,
+      "behavior_checks": [
+        {"rule": "boot_first", "passed": true, "detail": null},
+        {"rule": "envelope_format", "passed": true, "detail": null}
+      ]
+    }
+  ]
 }
 ```
-
----
 
 ### GET /conformance/{action}
 
-Detail for a single action.
+Single action conformance detail.
 
-**Response (200):** Single item from `results` array above.
-
----
+**Auth:** JWT Bearer
 
 ### POST /conformance/reset
 
-Reset all conformance results to `not_tested`.
+Reset all conformance results to "not_tested".
+
+**Auth:** JWT Bearer
 
 **Response (200):**
 ```json
-{
-    "message": "Conformance results reset",
-    "actions_reset": 26
-}
+{"message": "Conformance results reset", "actions_reset": 26}
 ```
-
----
 
 ### GET /conformance/export/pdf
 
-Download conformance report as PDF.
+Download PDF conformance report.
 
-**Response:** `Content-Type: application/pdf`, file download.
-
----
+**Auth:** JWT Bearer
+**Content-Type:** application/pdf
 
 ### GET /conformance/export/json
 
-Download conformance report as JSON (machine-readable, for CI/CD).
+Download JSON conformance report.
 
-**Response:** Same as `GET /conformance` but with `Content-Disposition: attachment`.
+**Auth:** JWT Bearer
+**Content-Type:** application/json
 
 ---
 
-## 6. Settings
+## Status Endpoint
 
-### GET /settings
+### GET /status
+
+Public health check (no auth required).
 
 **Response (200):**
 ```json
 {
-    "protocol_version": "0.1.0",
-    "validation_mode": "strict",
-    "available_versions": ["0.1.0"]
+  "status": "operational",
+  "version": "0.2.0",
+  "services": {
+    "database": "ok",
+    "redis": "ok",
+    "emqx": "ok",
+    "queue": "ok"
+  }
 }
 ```
+
+**Response (503):** When any critical service reports "error", status becomes "degraded".
+
+EMQX returns "unavailable" (not "error") when not configured — does NOT trigger 503.
 
 ---
 
-### PATCH /settings
+## Internal Endpoints
 
-**Request:**
-```json
-{
-    "validation_mode": "lenient"
-}
-```
-
-Or:
-```json
-{
-    "protocol_version": "0.1.0"
-}
-```
-
-Changing protocol version resets conformance results (different spec = different validation).
-
-**Response (200):**
-```json
-{
-    "protocol_version": "0.1.0",
-    "validation_mode": "lenient",
-    "message": "Settings updated"
-}
-```
-
----
-
-## 7. Internal Endpoints
-
-Not part of public API. Restricted to Docker network via Nginx.
-
-### POST /internal/mqtt/webhook
-
-EMQX webhook — receives MQTT messages.
-
-**Request:**
-```json
-{
-    "topic": "ospp/v1/stations/stn_00000001/to-server",
-    "payload": "{...json string...}",
-    "qos": 1
-}
-```
-
-**Response (200):**
-```json
-{
-    "status": "ok"
-}
-```
-
----
+Restricted to Docker network IPs (172.16.0.0/12, 10.0.0.0/8) by nginx.
 
 ### POST /internal/mqtt/auth
 
-EMQX authentication backend.
+EMQX calls this to authenticate MQTT connections.
 
-**Request:**
-```json
-{
-    "username": "sandbox_a1b2c3d4",
-    "password": "mqtt-password",
-    "clientid": "station-client-id"
-}
-```
-
-**Response (200):**
-```json
-{
-    "result": "allow",
-    "is_superuser": false
-}
-```
-
-Or deny:
-```json
-{
-    "result": "deny"
-}
-```
-
----
+**Request:** `{"username": "stn_...", "password": "...", "clientid": "..."}`
+**Response:** `{"result": "allow"}` or `{"result": "deny"}`
 
 ### POST /internal/mqtt/acl
 
-EMQX authorization (topic ACL).
+EMQX calls this to authorize MQTT publish/subscribe per topic.
 
-**Request:**
-```json
-{
-    "username": "sandbox_a1b2c3d4",
-    "topic": "ospp/v1/stations/stn_00000001/to-server",
-    "action": "publish"
-}
-```
+**Request:** `{"username": "stn_...", "topic": "ospp/v1/stations/stn_.../to-server", "action": "publish"}`
+**Response:** `{"result": "allow"}` or `{"result": "deny"}`
 
-**Response (200):**
-```json
-{
-    "result": "allow"
-}
-```
+Stations can only publish to their own `to-server` topic and subscribe to their own `to-station` topic.
 
----
+### POST /internal/mqtt/webhook
 
-## 8. WebSocket (Laravel Reverb)
+EMQX webhook delivers MQTT messages for processing. Protected by `verify-emqx` middleware.
 
-### Channel: `station.{stationId}`
-
-Private channel. Tenant must be authenticated.
-
-**Events broadcast:**
-
-#### MessageReceived
-```json
-{
-    "event": "MessageReceived",
-    "data": {
-        "id": 12345,
-        "direction": "inbound",
-        "action": "BootNotification",
-        "message_id": "msg_abc123",
-        "payload": { ... },
-        "schema_valid": true,
-        "validation_errors": null,
-        "created_at": "2026-03-09T10:00:05.123Z"
-    }
-}
-```
-
-#### MessageSent
-```json
-{
-    "event": "MessageSent",
-    "data": {
-        "id": 12346,
-        "direction": "outbound",
-        "action": "BootNotification",
-        "message_id": "msg_abc123",
-        "payload": { ... },
-        "created_at": "2026-03-09T10:00:05.234Z"
-    }
-}
-```
-
-#### StationConnected / StationDisconnected
-```json
-{
-    "event": "StationConnected",
-    "data": {
-        "station_id": "stn_00000001",
-        "connected_at": "2026-03-09T10:00:00.000Z"
-    }
-}
-```
-
-### Authentication
-
-Laravel Echo with Sanctum token:
-
-```javascript
-window.Echo = new Echo({
-    broadcaster: 'reverb',
-    key: reverbAppKey,
-    wsHost: window.location.hostname,
-    wsPort: 8080,
-    forceTLS: false,
-    authEndpoint: '/api/v1/broadcasting/auth',
-    auth: {
-        headers: {
-            Authorization: 'Bearer ' + token
-        }
-    }
-});
-
-Echo.private('station.' + stationId)
-    .listen('MessageReceived', (e) => { ... })
-    .listen('MessageSent', (e) => { ... })
-    .listen('StationConnected', (e) => { ... })
-    .listen('StationDisconnected', (e) => { ... });
-```
+**Request:** `{"topic": "ospp/v1/stations/stn_.../to-server", "payload": "{...}"}`
+**Response:** `{"status": "ok"}`
