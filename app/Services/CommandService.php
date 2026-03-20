@@ -7,6 +7,7 @@ namespace App\Services;
 use App\Dto\CommandResult;
 use App\Models\CommandHistory;
 use App\Models\TenantStation;
+use App\Services\StationStateService;
 
 final class CommandService
 {
@@ -22,6 +23,7 @@ final class CommandService
         private readonly EmqxApiPublisher $publisher,
         private readonly MessageLogService $messageLog,
         private readonly SchemaValidationService $schemaValidator,
+        private readonly StationStateService $stationState,
     ) {}
 
     /**
@@ -47,13 +49,27 @@ final class CommandService
             return CommandResult::validationError($validation->errors);
         }
 
+        // Spec §1.2: reject StartService/ReserveBay on Unknown bay (3002 BAY_NOT_READY)
+        if (in_array($action, ['StartService', 'ReserveBay'], true)) {
+            $bayId = (string) ($parameters['bayId'] ?? '');
+            if ($bayId !== '') {
+                $bayNumber = $this->stationState->resolveBayNumber($station->station_id, $bayId);
+                if ($bayNumber > 0) {
+                    $bayStatus = $this->stationState->getBayStatus($station->station_id, $bayNumber);
+                    if ($bayStatus === 'Unknown') {
+                        return CommandResult::error('BAY_NOT_READY', 'Bay is in Unknown state — waiting for StatusNotification after boot');
+                    }
+                }
+            }
+        }
+
         $messageId = 'msg_' . bin2hex(random_bytes(16));
 
         $envelope = [
             'action' => $action,
             'messageId' => $messageId,
             'messageType' => 'Request',
-            'source' => 'CSMS',
+            'source' => 'Server',
             'protocolVersion' => $station->protocol_version,
             'timestamp' => now()->format('Y-m-d\TH:i:s.v\Z'),
             'payload' => $parameters,
