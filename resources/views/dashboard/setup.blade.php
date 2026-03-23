@@ -32,7 +32,7 @@
             </div>
             <div>
                 <label class="text-sm text-gray-500">Protocol Version</label>
-                <p class="font-mono text-sm">{{ $station->protocol_version }}</p>
+                <p class="font-mono text-sm">{{ $tenant->protocol_version }}</p>
             </div>
         </div>
     </div>

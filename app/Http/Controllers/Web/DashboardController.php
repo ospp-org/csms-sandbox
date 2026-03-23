@@ -27,7 +27,7 @@ final class DashboardController extends Controller
         $station = $tenant->station;
         $mqttPassword = $mqttCredentials->getPlainPassword($station);
 
-        return view('dashboard.setup', compact('station', 'mqttPassword'));
+        return view('dashboard.setup', compact('tenant', 'station', 'mqttPassword'));
     }
 
     public function monitor(Request $request): View
