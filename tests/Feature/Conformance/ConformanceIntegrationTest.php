@@ -20,7 +20,7 @@ test('BootNotification dispatched through pipeline records conformance result', 
         'messageId' => 'msg_ci_001',
         'messageType' => 'Request',
         'source' => 'Station',
-        'protocolVersion' => '0.1.0',
+        'protocolVersion' => '0.2.1',
         'timestamp' => '2026-03-09T10:00:05.000Z',
         'payload' => [
             'stationId' => 'stn_a0000001',
@@ -64,7 +64,7 @@ test('invalid schema records failed conformance result', function (): void {
         'messageId' => 'msg_ci_002',
         'messageType' => 'Request',
         'source' => 'Station',
-        'protocolVersion' => '0.1.0',
+        'protocolVersion' => '0.2.1',
         'timestamp' => '2026-03-09T10:00:05.000Z',
         'payload' => [
             'stationId' => 'stn_a0000002',
@@ -96,7 +96,7 @@ test('conformance report reflects pipeline results', function (): void {
         'messageId' => 'msg_ci_003',
         'messageType' => 'Request',
         'source' => 'Station',
-        'protocolVersion' => '0.1.0',
+        'protocolVersion' => '0.2.1',
         'timestamp' => '2026-03-09T10:00:05.000Z',
         'payload' => [
             'stationId' => 'stn_a0000003',

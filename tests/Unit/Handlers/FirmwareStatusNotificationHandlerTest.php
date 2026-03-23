@@ -20,7 +20,7 @@ test('acknowledges firmware downloading notification', function (): void {
             'progress' => 50,
         ],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $handler->handle($context);
@@ -43,7 +43,7 @@ test('acknowledges firmware installed notification', function (): void {
             'firmwareVersion' => '2.0.0',
         ],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $handler->handle($context);

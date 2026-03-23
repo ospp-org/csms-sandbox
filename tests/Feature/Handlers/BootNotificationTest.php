@@ -21,7 +21,7 @@ test('BootNotification from registered station returns Accepted and updates stat
         'messageId' => 'msg_boot_001',
         'messageType' => 'Request',
         'source' => 'Station',
-        'protocolVersion' => '0.1.0',
+        'protocolVersion' => '0.2.1',
         'timestamp' => '2026-03-09T10:00:05.000Z',
         'payload' => [
             'stationId' => 'stn_ae000001',
@@ -82,7 +82,7 @@ test('BootNotification initializes all bays in Redis', function (): void {
         'messageId' => 'msg_002',
         'messageType' => 'Request',
         'source' => 'Station',
-        'protocolVersion' => '0.1.0',
+        'protocolVersion' => '0.2.1',
         'timestamp' => '2026-03-09T10:00:05.000Z',
         'payload' => [
             'stationId' => 'stn_be000002',
@@ -120,7 +120,7 @@ test('BootNotification from unknown station is ignored', function (): void {
         'messageId' => 'msg_003',
         'messageType' => 'Request',
         'source' => 'Station',
-        'protocolVersion' => '0.1.0',
+        'protocolVersion' => '0.2.1',
         'timestamp' => '2026-03-09T10:00:05.000Z',
         'payload' => [
             'stationId' => 'stn_ce000003',
@@ -140,4 +140,134 @@ test('BootNotification from unknown station is ignored', function (): void {
 
     $this->assertDatabaseCount('message_log', 0);
     Http::assertNothingSent();
+});
+
+test('BootNotification updates tenant_stations.protocol_version from envelope', function (): void {
+    Http::fake(['*/api/v5/*' => Http::response(['token' => 'test'], 200)]);
+
+    $tenant = Tenant::factory()->create();
+    $station = TenantStation::factory()->for($tenant)->create([
+        'station_id' => 'stn_ce000004',
+        'protocol_version' => '0.1.0',
+    ]);
+
+    $dispatcher = app(MqttMessageDispatcher::class);
+    $dispatcher->dispatch('stn_ce000004', [
+        'action' => 'BootNotification',
+        'messageId' => 'msg_pv_001',
+        'messageType' => 'Request',
+        'source' => 'Station',
+        'protocolVersion' => '0.2.1',
+        'timestamp' => '2026-03-20T10:00:00.000Z',
+        'payload' => [
+            'stationId' => 'stn_ce000004',
+            'firmwareVersion' => '1.0.0',
+            'stationModel' => 'TestModel',
+            'stationVendor' => 'TestVendor',
+            'serialNumber' => 'SN000004',
+            'bayCount' => 2,
+            'uptimeSeconds' => 0,
+            'pendingOfflineTransactions' => 0,
+            'timezone' => 'UTC',
+            'bootReason' => 'PowerOn',
+            'capabilities' => ['bleSupported' => false, 'offlineModeSupported' => false, 'meterValuesSupported' => true],
+            'networkInfo' => ['connectionType' => 'Ethernet'],
+        ],
+    ]);
+
+    $station->refresh();
+    expect($station->protocol_version)->toBe('0.2.1');
+});
+
+test('BootNotification with wrong protocolVersion returns Rejected 1007', function (): void {
+    Http::fake(['*/api/v5/*' => Http::response(['token' => 'test'], 200)]);
+
+    $tenant = Tenant::factory()->create();
+    $station = TenantStation::factory()->for($tenant)->create([
+        'station_id' => 'stn_ce000005',
+        'protocol_version' => '0.2.1',
+    ]);
+
+    $dispatcher = app(MqttMessageDispatcher::class);
+    $dispatcher->dispatch('stn_ce000005', [
+        'action' => 'BootNotification',
+        'messageId' => 'msg_pv_002',
+        'messageType' => 'Request',
+        'source' => 'Station',
+        'protocolVersion' => '9.9.9',
+        'timestamp' => '2026-03-20T10:00:00.000Z',
+        'payload' => [
+            'stationId' => 'stn_ce000005',
+            'firmwareVersion' => '1.0.0',
+            'stationModel' => 'TestModel',
+            'stationVendor' => 'TestVendor',
+            'serialNumber' => 'SN000005',
+            'bayCount' => 2,
+            'uptimeSeconds' => 0,
+            'pendingOfflineTransactions' => 0,
+            'timezone' => 'UTC',
+            'bootReason' => 'PowerOn',
+            'capabilities' => ['bleSupported' => false, 'offlineModeSupported' => false, 'meterValuesSupported' => true],
+            'networkInfo' => ['connectionType' => 'Ethernet'],
+        ],
+    ]);
+
+    $outbound = \App\Models\MessageLog::where('station_id', 'stn_ce000005')
+        ->where('action', 'BootNotification')
+        ->where('direction', 'outbound')
+        ->first();
+
+    expect($outbound)->not->toBeNull();
+    expect($outbound->payload['payload']['status'])->toBe('Rejected');
+    expect($outbound->payload['payload']['supportedVersions'])->toContain('0.2.1');
+
+    // protocol_version NOT updated
+    $station->refresh();
+    expect($station->protocol_version)->toBe('0.2.1');
+});
+
+test('BootNotification with empty protocolVersion returns Rejected', function (): void {
+    Http::fake(['*/api/v5/*' => Http::response(['token' => 'test'], 200)]);
+
+    $tenant = Tenant::factory()->create();
+    $station = TenantStation::factory()->for($tenant)->create([
+        'station_id' => 'stn_ce000006',
+        'protocol_version' => '0.2.1',
+    ]);
+
+    $dispatcher = app(MqttMessageDispatcher::class);
+    $dispatcher->dispatch('stn_ce000006', [
+        'action' => 'BootNotification',
+        'messageId' => 'msg_pv_003',
+        'messageType' => 'Request',
+        'source' => 'Station',
+        'protocolVersion' => '',
+        'timestamp' => '2026-03-20T10:00:00.000Z',
+        'payload' => [
+            'stationId' => 'stn_ce000006',
+            'firmwareVersion' => '1.0.0',
+            'stationModel' => 'TestModel',
+            'stationVendor' => 'TestVendor',
+            'serialNumber' => 'SN000006',
+            'bayCount' => 2,
+            'uptimeSeconds' => 0,
+            'pendingOfflineTransactions' => 0,
+            'timezone' => 'UTC',
+            'bootReason' => 'PowerOn',
+            'capabilities' => ['bleSupported' => false, 'offlineModeSupported' => false, 'meterValuesSupported' => true],
+            'networkInfo' => ['connectionType' => 'Ethernet'],
+        ],
+    ]);
+
+    $outbound = \App\Models\MessageLog::where('station_id', 'stn_ce000006')
+        ->where('action', 'BootNotification')
+        ->where('direction', 'outbound')
+        ->first();
+
+    expect($outbound)->not->toBeNull();
+    expect($outbound->payload['payload']['status'])->toBe('Rejected');
+
+    // protocol_version NOT updated
+    $station->refresh();
+    expect($station->protocol_version)->toBe('0.2.1');
 });

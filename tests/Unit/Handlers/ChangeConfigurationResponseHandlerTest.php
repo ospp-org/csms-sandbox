@@ -37,7 +37,7 @@ test('All Accepted results apply config in Redis', function (): void {
             ['key' => 'retryTimeout', 'status' => 'RebootRequired'],
         ]],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $handler->handle($context);
@@ -78,7 +78,7 @@ test('Any Rejected result prevents all config changes (atomic)', function (): vo
             ['key' => 'debugMode', 'status' => 'Rejected', 'errorCode' => 1001, 'errorText' => 'ReadOnly'],
         ]],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $handler->handle($context);

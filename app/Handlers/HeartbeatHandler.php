@@ -20,7 +20,7 @@ final class HeartbeatHandler implements OsppHandler
         $this->stationState->refreshConnection($context->stationId);
         $this->stationState->setLastHeartbeat($context->stationId, time());
 
-        return HandlerResult::accepted([
+        return HandlerResult::responded([
             'serverTime' => now()->format('Y-m-d\TH:i:s.v\Z'),
         ]);
     }

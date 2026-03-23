@@ -18,6 +18,32 @@ final class BootNotificationHandler implements OsppHandler
 
     public function handle(HandlerContext $context): HandlerResult
     {
+        $station = TenantStation::with('tenant')
+            ->where('station_id', $context->stationId)
+            ->first();
+
+        if ($station === null || $station->tenant === null) {
+            return HandlerResult::responded([
+                'status' => 'Rejected',
+                'serverTime' => now()->format('Y-m-d\TH:i:s.v\Z'),
+                'heartbeatIntervalSec' => 30,
+                'retryInterval' => 30,
+            ]);
+        }
+
+        $tenantVersion = $station->tenant->protocol_version
+            ?? config('sandbox.default_protocol_version');
+
+        if ($context->protocolVersion === '' || $context->protocolVersion !== $tenantVersion) {
+            return HandlerResult::responded([
+                'status' => 'Rejected',
+                'serverTime' => now()->format('Y-m-d\TH:i:s.v\Z'),
+                'heartbeatIntervalSec' => 30,
+                'retryInterval' => 30,
+                'supportedVersions' => [$tenantVersion],
+            ]);
+        }
+
         $bayCount = (int) ($context->payload['bayCount'] ?? 4);
 
         $this->stationState->resetState($context->stationId, $bayCount);
@@ -26,7 +52,7 @@ final class BootNotificationHandler implements OsppHandler
 
         $heartbeatInterval = $this->stationState->getHeartbeatInterval($context->stationId);
 
-        TenantStation::where('station_id', $context->stationId)->update([
+        $station->update([
             'is_connected' => true,
             'last_connected_at' => now(),
             'last_boot_at' => now(),
@@ -34,9 +60,10 @@ final class BootNotificationHandler implements OsppHandler
             'station_model' => $context->payload['stationModel'] ?? null,
             'station_vendor' => $context->payload['stationVendor'] ?? null,
             'bay_count' => $bayCount,
+            'protocol_version' => $context->protocolVersion,
         ]);
 
-        return HandlerResult::accepted([
+        return HandlerResult::responded([
             'status' => 'Accepted',
             'serverTime' => now()->format('Y-m-d\TH:i:s.v\Z'),
             'heartbeatIntervalSec' => $heartbeatInterval,

@@ -27,7 +27,7 @@ test('BootNotification returns Accepted with serverTime and heartbeatInterval', 
             'bayCount' => 4,
         ],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $handler->handle($context);
@@ -53,7 +53,7 @@ test('BootNotification sets lifecycle to online in Redis', function (): void {
         messageType: 'Request',
         payload: ['stationModel' => 'T', 'stationVendor' => 'T', 'firmwareVersion' => '1.0.0', 'bayCount' => 2],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $handler->handle($context);

@@ -12,7 +12,7 @@ final class DataTransferHandler implements OsppHandler
 {
     public function handle(HandlerContext $context): HandlerResult
     {
-        return HandlerResult::accepted([
+        return HandlerResult::responded([
             'status' => 'Accepted',
         ]);
     }

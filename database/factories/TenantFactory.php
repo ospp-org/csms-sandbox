@@ -20,7 +20,7 @@ final class TenantFactory extends Factory
             'email' => fake()->unique()->safeEmail(),
             'name' => fake()->name(),
             'password' => 'password',
-            'protocol_version' => '0.1.0',
+            'protocol_version' => config('sandbox.default_protocol_version', '0.2.1'),
             'validation_mode' => 'strict',
             'email_verified_at' => now(),
         ];

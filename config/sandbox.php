@@ -9,7 +9,8 @@ return [
     | Protocol Version
     |--------------------------------------------------------------------------
     */
-    'default_protocol_version' => '0.2.1',
+    'default_protocol_version' => \Ospp\Protocol\ValueObjects\ProtocolVersion::default()->value,
+    'supported_protocol_versions' => [\Ospp\Protocol\ValueObjects\ProtocolVersion::default()->value],
 
     /*
     |--------------------------------------------------------------------------

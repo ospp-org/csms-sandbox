@@ -19,7 +19,7 @@ test('DiagnosticsUploadRule passes for valid diagnostics transition sequence', f
         messageType: 'Event',
         payload: ['status' => 'Collecting'],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $rule->check($context, $state);
@@ -34,7 +34,7 @@ test('DiagnosticsUploadRule passes for valid diagnostics transition sequence', f
         messageType: 'Event',
         payload: ['status' => 'Uploading'],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $rule->check($context, $state);
@@ -49,7 +49,7 @@ test('DiagnosticsUploadRule passes for valid diagnostics transition sequence', f
         messageType: 'Event',
         payload: ['status' => 'Uploaded'],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $rule->check($context, $state);
@@ -72,7 +72,7 @@ test('DiagnosticsUploadRule fails for invalid diagnostics transition', function 
         messageType: 'Event',
         payload: ['status' => 'Uploaded'],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $rule->check($context, $state);

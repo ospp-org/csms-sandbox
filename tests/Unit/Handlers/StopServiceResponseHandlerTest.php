@@ -34,7 +34,7 @@ test('Accepted sets bay to Finishing', function (): void {
         messageType: 'Response',
         payload: ['status' => 'Accepted'],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $handler->handle($context);
@@ -70,7 +70,7 @@ test('updates command to responded', function (): void {
         messageType: 'Response',
         payload: ['status' => 'Accepted'],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $handler->handle($context);

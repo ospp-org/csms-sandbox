@@ -20,7 +20,7 @@ test('CertificateExpiryRule passes for valid PEM CSR with valid certificateType'
             'certificateType' => 'StationCertificate',
         ],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $rule->check($context, app(StationStateService::class));
@@ -42,7 +42,7 @@ test('CertificateExpiryRule fails for invalid CSR format', function (): void {
             'certificateType' => 'StationCertificate',
         ],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $rule->check($context, app(StationStateService::class));

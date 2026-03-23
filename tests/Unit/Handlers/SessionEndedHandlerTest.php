@@ -28,7 +28,7 @@ test('SessionEnded TimerExpired sets bay to Finishing and clears session', funct
             'creditsCharged' => 100,
         ],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $handler->handle($context);
@@ -62,7 +62,7 @@ test('SessionEnded Fault sets bay to Faulted and clears session', function (): v
             'meterValues' => ['liquidMl' => 18900, 'energyWh' => 63],
         ],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $handler->handle($context);
@@ -89,7 +89,7 @@ test('SessionEnded returns acknowledged with no response payload', function (): 
             'creditsCharged' => 50,
         ],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $handler->handle($context);

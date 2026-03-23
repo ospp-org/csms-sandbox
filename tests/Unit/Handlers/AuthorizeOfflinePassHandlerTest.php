@@ -23,7 +23,7 @@ test('returns Accepted with session parameters', function (): void {
             'serviceId' => 'svc_wash',
         ],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $handler->handle($context);
@@ -54,7 +54,7 @@ test('generates unique session IDs', function (): void {
             'serviceId' => 'svc_wash',
         ],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result1 = $handler->handle($context);

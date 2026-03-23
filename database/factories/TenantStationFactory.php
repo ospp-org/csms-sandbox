@@ -27,7 +27,7 @@ final class TenantStationFactory extends Factory
             'mqtt_username' => 'sandbox_' . Str::random(8),
             'mqtt_password_hash' => Hash::make($mqttPassword),
             'mqtt_password_encrypted' => $mqttPassword,
-            'protocol_version' => '0.1.0',
+            'protocol_version' => config('sandbox.default_protocol_version', '0.2.1'),
             'is_connected' => false,
         ];
     }

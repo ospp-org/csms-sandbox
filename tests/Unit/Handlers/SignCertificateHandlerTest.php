@@ -19,7 +19,7 @@ test('SignCertificate returns certificate', function (): void {
             'certificateType' => 'StationCertificate',
         ],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $handler->handle($context);
@@ -43,7 +43,7 @@ test('SignCertificate acknowledges CSR without certificate in response', functio
             'certificateType' => 'MQTTClientCertificate',
         ],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $handler->handle($context);

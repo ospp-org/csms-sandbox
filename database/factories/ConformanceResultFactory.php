@@ -19,7 +19,7 @@ final class ConformanceResultFactory extends Factory
     {
         return [
             'tenant_id' => Tenant::factory(),
-            'protocol_version' => '0.1.0',
+            'protocol_version' => config('sandbox.default_protocol_version', '0.2.1'),
             'action' => fake()->randomElement([
                 'BootNotification', 'Heartbeat', 'StatusNotification',
             ]),

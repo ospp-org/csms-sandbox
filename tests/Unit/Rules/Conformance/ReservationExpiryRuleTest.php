@@ -29,7 +29,7 @@ test('ReservationExpiryRule passes when command has future expirationTime', func
         messageType: 'Response',
         payload: ['status' => 'Accepted'],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $rule->check($context, app(StationStateService::class));
@@ -58,7 +58,7 @@ test('ReservationExpiryRule fails when command has past expirationTime', functio
         messageType: 'Response',
         payload: ['status' => 'Accepted'],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $rule->check($context, app(StationStateService::class));

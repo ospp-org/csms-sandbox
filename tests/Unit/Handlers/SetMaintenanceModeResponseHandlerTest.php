@@ -34,7 +34,7 @@ test('Accepted with bayId sets bay to Unavailable', function (): void {
         messageType: 'Response',
         payload: ['status' => 'Accepted'],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
     $result = $handler->handle($context);
 
@@ -73,7 +73,7 @@ test('Accepted with enabled=false sets bay Available', function (): void {
         messageType: 'Response',
         payload: ['status' => 'Accepted'],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
     $result = $handler->handle($context);
 

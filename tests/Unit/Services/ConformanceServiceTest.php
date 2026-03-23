@@ -81,7 +81,7 @@ test('getReport returns correct scoring', function (): void {
     ConformanceResult::factory()->for($tenant)->create(['action' => 'DataTransfer', 'status' => 'not_tested']);
 
     $service = app(ConformanceService::class);
-    $report = $service->getReport($tenant->id, '0.1.0');
+    $report = $service->getReport($tenant->id, config('sandbox.default_protocol_version'));
 
     expect($report->passed)->toBe(2);
     expect($report->failed)->toBe(1);
@@ -97,7 +97,7 @@ test('reset clears all results', function (): void {
     ConformanceResult::factory()->for($tenant)->create(['action' => 'Heartbeat', 'status' => 'failed', 'last_tested_at' => now()]);
 
     $service = app(ConformanceService::class);
-    $count = $service->reset($tenant->id, '0.1.0');
+    $count = $service->reset($tenant->id, config('sandbox.default_protocol_version'));
 
     expect($count)->toBe(2);
 
@@ -121,11 +121,11 @@ test('evaluate runs all rules and records result', function (): void {
             'messageId' => 'msg_ev_001',
             'messageType' => 'Request',
             'source' => 'Station',
-            'protocolVersion' => '0.1.0',
+            'protocolVersion' => '0.2.1',
             'timestamp' => '2026-03-09T10:00:05.000Z',
             'payload' => [],
         ],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $results = $service->evaluate($context, ValidationResult::valid());

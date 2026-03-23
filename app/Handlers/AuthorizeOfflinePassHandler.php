@@ -15,7 +15,7 @@ final class AuthorizeOfflinePassHandler implements OsppHandler
         // Sandbox: always accept offline passes with default session parameters.
         $sessionId = 'sess_' . bin2hex(random_bytes(8));
 
-        return HandlerResult::accepted([
+        return HandlerResult::responded([
             'status' => 'Accepted',
             'sessionId' => $sessionId,
             'durationSeconds' => 3600,

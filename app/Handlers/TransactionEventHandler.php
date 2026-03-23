@@ -23,7 +23,7 @@ final class TransactionEventHandler implements OsppHandler
             $this->stationState->setLastTxCounter($context->stationId, $txCounter);
         }
 
-        return HandlerResult::accepted([
+        return HandlerResult::responded([
             'status' => 'Accepted',
         ]);
     }

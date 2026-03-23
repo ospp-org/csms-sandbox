@@ -13,7 +13,7 @@ test('POST /internal/mqtt/webhook dispatches ProcessMqttMessage job', function (
         'messageId' => 'msg_001',
         'messageType' => 'Request',
         'source' => 'Station',
-        'protocolVersion' => '0.1.0',
+        'protocolVersion' => '0.2.1',
         'timestamp' => '2026-03-09T10:00:05.000Z',
         'payload' => [
             'stationModel' => 'WashPro 5000',

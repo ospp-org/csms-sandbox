@@ -17,7 +17,7 @@ test('BootFirstRule passes for BootNotification action', function (): void {
         messageType: 'Request',
         payload: [],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $rule->check($context, app(StationStateService::class));
@@ -38,7 +38,7 @@ test('BootFirstRule fails when non-boot message sent before boot', function (): 
         messageType: 'Request',
         payload: [],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     // Station lifecycle is 'offline' by default (no state set)
@@ -61,7 +61,7 @@ test('BootFirstRule passes when station is online', function (): void {
         messageType: 'Request',
         payload: [],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $rule->check($context, $state);

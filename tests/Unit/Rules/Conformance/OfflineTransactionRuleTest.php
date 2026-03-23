@@ -19,7 +19,7 @@ test('OfflineTransactionRule passes for valid sequential txCounter', function ()
         messageType: 'Request',
         payload: ['txCounter' => 1],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $rule->check($context, $state);
@@ -34,7 +34,7 @@ test('OfflineTransactionRule passes for valid sequential txCounter', function ()
         messageType: 'Request',
         payload: ['txCounter' => 2],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $rule->check($context, $state);
@@ -55,7 +55,7 @@ test('OfflineTransactionRule fails for duplicate txCounter', function (): void {
         messageType: 'Request',
         payload: ['txCounter' => 5],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $rule->check($context, $state);
@@ -78,7 +78,7 @@ test('OfflineTransactionRule fails for gap in txCounter', function (): void {
         messageType: 'Request',
         payload: ['txCounter' => 7],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $rule->check($context, $state);

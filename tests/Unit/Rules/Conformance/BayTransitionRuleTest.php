@@ -17,7 +17,7 @@ test('BayTransitionRule passes for non-StatusNotification', function (): void {
         messageType: 'Request',
         payload: [],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $rule->check($context, app(StationStateService::class));
@@ -38,7 +38,7 @@ test('BayTransitionRule passes for valid transition Unknown to Available', funct
         messageType: 'Event',
         payload: ['bayNumber' => 1, 'status' => 'Available'],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $rule->check($context, $state);
@@ -59,7 +59,7 @@ test('BayTransitionRule fails for invalid transition Unknown to Occupied', funct
         messageType: 'Event',
         payload: ['bayNumber' => 1, 'status' => 'Occupied'],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $rule->check($context, $state);
@@ -82,7 +82,7 @@ test('BayTransitionRule passes for self-transition Available to Available', func
         messageType: 'Event',
         payload: ['bayNumber' => 1, 'status' => 'Available'],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $rule->check($context, $state);
@@ -104,7 +104,7 @@ test('BayTransitionRule passes for valid transition Available to Occupied', func
         messageType: 'Event',
         payload: ['bayNumber' => 1, 'status' => 'Occupied'],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $rule->check($context, $state);

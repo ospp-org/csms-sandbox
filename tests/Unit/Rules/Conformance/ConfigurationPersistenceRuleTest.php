@@ -22,7 +22,7 @@ test('ConfigurationPersistenceRule passes when all results are valid', function 
             ],
         ],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $rule->check($context, app(StationStateService::class));
@@ -45,7 +45,7 @@ test('ConfigurationPersistenceRule fails when Rejected result missing errorCode'
             ],
         ],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $rule->check($context, app(StationStateService::class));

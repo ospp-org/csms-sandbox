@@ -30,7 +30,7 @@ test('marks command as responded', function (): void {
         messageType: 'Response',
         payload: ['status' => 'Accepted'],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
     $result = $handler->handle($context);
 
@@ -63,7 +63,7 @@ test('handles NotImplemented status', function (): void {
         messageType: 'Response',
         payload: ['status' => 'NotImplemented'],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
     $result = $handler->handle($context);
 

@@ -19,7 +19,7 @@ test('IdempotencyRule passes for unique messageId', function (): void {
         messageType: 'Request',
         payload: [],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $rule->check($context, app(StationStateService::class));
@@ -64,7 +64,7 @@ test('IdempotencyRule fails for duplicate messageId', function (): void {
         messageType: 'Request',
         payload: [],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $rule->check($context, app(StationStateService::class));

@@ -34,7 +34,7 @@ test('Stores configuration in Redis', function (): void {
             ['key' => 'firmwareVersion', 'value' => '1.2.0', 'readonly' => true],
         ]],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $handler->handle($context);
@@ -62,7 +62,7 @@ test('Works without pending command', function (): void {
             ['key' => 'key2', 'value' => 'val2', 'readonly' => false],
         ]],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $handler->handle($context);

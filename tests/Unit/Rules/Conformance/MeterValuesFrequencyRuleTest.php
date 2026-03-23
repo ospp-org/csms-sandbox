@@ -26,7 +26,7 @@ test('MeterValuesFrequencyRule passes for valid meter values with advancing time
             ],
         ],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $rule->check($context, $state);
@@ -47,7 +47,7 @@ test('MeterValuesFrequencyRule passes for valid meter values with advancing time
             ],
         ],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $rule->check($context, $state);
@@ -76,7 +76,7 @@ test('MeterValuesFrequencyRule fails when timestamp goes backwards', function ()
             ],
         ],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $rule->check($context, $state);

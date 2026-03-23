@@ -15,7 +15,7 @@ final class SignCertificateHandler implements OsppHandler
         // Sandbox: acknowledge CSR receipt. A real CSMS would process the CSR
         // and deliver the signed certificate via a separate CertificateInstall command.
 
-        return HandlerResult::accepted([
+        return HandlerResult::responded([
             'status' => 'Accepted',
         ]);
     }

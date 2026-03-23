@@ -17,7 +17,7 @@ test('SessionStateRule passes for non-session actions', function (): void {
         messageType: 'Request',
         payload: [],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $rule->check($context, app(StationStateService::class));
@@ -39,7 +39,7 @@ test('SessionStateRule fails when MeterValues sent without session', function ()
         messageType: 'Event',
         payload: ['bayId' => 'bay_00000001', 'sessionId' => 'sess_00000001', 'timestamp' => '2026-03-14T10:00:00.000Z', 'values' => []],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $rule->check($context, $state);
@@ -63,7 +63,7 @@ test('SessionStateRule passes when session exists', function (): void {
         messageType: 'Event',
         payload: ['bayId' => 'bay_00000001', 'sessionId' => 'sess_001', 'timestamp' => '2026-03-14T10:00:00.000Z', 'values' => []],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $rule->check($context, $state);
@@ -82,7 +82,7 @@ test('SessionStateRule passes for StopServiceResponse', function (): void {
         messageType: 'Response',
         payload: ['status' => 'Accepted', 'actualDurationSeconds' => 300, 'creditsCharged' => 100],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $rule->check($context, app(StationStateService::class));

@@ -32,7 +32,7 @@ function bootStationForIsolation(string $stationId): void
         'messageId' => 'msg_boot_' . $stationId,
         'messageType' => 'Request',
         'source' => 'Station',
-        'protocolVersion' => '0.1.0',
+        'protocolVersion' => '0.2.1',
         'timestamp' => '2026-03-16T10:00:00.000Z',
         'payload' => [
             'stationId' => $stationId,

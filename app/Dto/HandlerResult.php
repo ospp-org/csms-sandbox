@@ -24,6 +24,16 @@ final readonly class HandlerResult
         return new self(true, $payload);
     }
 
+    /**
+     * Handler produced a response payload to publish (regardless of protocol-level status).
+     *
+     * @param array<string, mixed> $payload
+     */
+    public static function responded(array $payload): self
+    {
+        return new self(true, $payload);
+    }
+
     public static function rejected(string $code, string $text): self
     {
         return new self(false, [], $code, $text);

@@ -24,7 +24,7 @@ test('sets station lifecycle to offline', function (): void {
             'reason' => 'UnexpectedDisconnect',
         ],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $handler->handle($context);
@@ -53,7 +53,7 @@ test('resets all bays to Unknown on disconnect', function (): void {
             'reason' => 'UnexpectedDisconnect',
         ],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $handler->handle($context);
@@ -85,7 +85,7 @@ test('updates is_connected to false in database', function (): void {
             'reason' => 'UnexpectedDisconnect',
         ],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $handler->handle($context);

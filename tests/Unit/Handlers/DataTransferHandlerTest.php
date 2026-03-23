@@ -20,7 +20,7 @@ test('DataTransfer returns Accepted', function (): void {
             'data' => '{"key":"value"}',
         ],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $handler->handle($context);
@@ -45,7 +45,7 @@ test('DataTransfer accepts any vendor data', function (): void {
             'data' => 'arbitrary-payload',
         ],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $handler->handle($context);

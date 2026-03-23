@@ -23,7 +23,7 @@ test('MeterValues returns acknowledged', function (): void {
             ],
         ],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $handler->handle($context);
@@ -47,7 +47,7 @@ test('MeterValues handles empty readings', function (): void {
             'readings' => [],
         ],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $handler->handle($context);

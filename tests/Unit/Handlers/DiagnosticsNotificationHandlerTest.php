@@ -19,7 +19,7 @@ test('acknowledges diagnostics notification', function (): void {
             'progress' => 25,
         ],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $handler->handle($context);
@@ -42,7 +42,7 @@ test('acknowledges completed diagnostics', function (): void {
             'fileName' => 'diag_20260314.tar.gz',
         ],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $handler->handle($context);

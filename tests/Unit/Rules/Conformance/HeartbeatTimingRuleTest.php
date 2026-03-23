@@ -17,7 +17,7 @@ test('HeartbeatTimingRule passes for non-heartbeat actions', function (): void {
         messageType: 'Request',
         payload: [],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $rule->check($context, app(StationStateService::class));
@@ -36,7 +36,7 @@ test('HeartbeatTimingRule passes for first heartbeat', function (): void {
         messageType: 'Request',
         payload: [],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $rule->check($context, app(StationStateService::class));
@@ -59,7 +59,7 @@ test('HeartbeatTimingRule passes when heartbeat is within tolerance', function (
         messageType: 'Request',
         payload: [],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $rule->check($context, $state);
@@ -82,7 +82,7 @@ test('HeartbeatTimingRule fails when heartbeat is too early', function (): void 
         messageType: 'Request',
         payload: [],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $rule->check($context, $state);

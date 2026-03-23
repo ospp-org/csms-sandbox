@@ -34,7 +34,7 @@ test('Accepted sets bay to Occupied and records session', function (): void {
         messageType: 'Response',
         payload: ['status' => 'Accepted'],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $handler->handle($context);
@@ -73,7 +73,7 @@ test('Rejected does not change bay state', function (): void {
         messageType: 'Response',
         payload: ['status' => 'Rejected'],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $handler->handle($context);

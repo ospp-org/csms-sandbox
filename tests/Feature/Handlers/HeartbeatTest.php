@@ -23,7 +23,7 @@ test('Heartbeat refreshes connection and returns serverTime', function (): void 
         'messageId' => 'msg_hb_001',
         'messageType' => 'Request',
         'source' => 'Station',
-        'protocolVersion' => '0.1.0',
+        'protocolVersion' => '0.2.1',
         'timestamp' => '2026-03-09T10:05:30.000Z',
         'payload' => [],
     ];
@@ -57,7 +57,7 @@ test('Heartbeat logs last heartbeat timestamp in Redis', function (): void {
         'messageId' => 'msg_hb_002',
         'messageType' => 'Request',
         'source' => 'Station',
-        'protocolVersion' => '0.1.0',
+        'protocolVersion' => '0.2.1',
         'timestamp' => '2026-03-09T10:05:30.000Z',
         'payload' => [],
     ]);

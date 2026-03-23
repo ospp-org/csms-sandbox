@@ -60,7 +60,7 @@ function sdkEnvelope(string $action, string $messageId, string $messageType, arr
         'messageId' => $messageId,
         'messageType' => $messageType,
         'source' => 'Station',
-        'protocolVersion' => '0.1.0',
+        'protocolVersion' => '0.2.1',
         'timestamp' => '2026-03-15T10:00:00.000Z',
         'payload' => $payload,
     ];

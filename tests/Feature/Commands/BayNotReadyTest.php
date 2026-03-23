@@ -25,7 +25,7 @@ function bootForBayTest(string $stationId): array
         'messageId' => 'msg_boot_' . $stationId,
         'messageType' => 'Request',
         'source' => 'Station',
-        'protocolVersion' => '0.1.0',
+        'protocolVersion' => '0.2.1',
         'timestamp' => '2026-03-20T10:00:00.000Z',
         'payload' => [
             'stationId' => $stationId,
@@ -105,7 +105,7 @@ test('StartService accepted after StatusNotification resolves bay to Available',
         'messageId' => 'msg_sn_001',
         'messageType' => 'Event',
         'source' => 'Station',
-        'protocolVersion' => '0.1.0',
+        'protocolVersion' => '0.2.1',
         'timestamp' => '2026-03-20T10:00:01.000Z',
         'payload' => [
             'bayId' => 'bay_00000001',

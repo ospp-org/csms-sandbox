@@ -28,7 +28,7 @@ test('accepts offline transaction', function (): void {
             'txCounter' => 1,
         ],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $handler->handle($context);
@@ -60,7 +60,7 @@ test('returns response payload for publishing', function (): void {
             'txCounter' => 2,
         ],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $handler->handle($context);

@@ -19,7 +19,7 @@ test('FirmwareUpdateSequenceRule passes for valid firmware transition sequence',
         messageType: 'Event',
         payload: ['status' => 'Downloading'],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $rule->check($context, $state);
@@ -34,7 +34,7 @@ test('FirmwareUpdateSequenceRule passes for valid firmware transition sequence',
         messageType: 'Event',
         payload: ['status' => 'Downloaded'],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $rule->check($context, $state);
@@ -49,7 +49,7 @@ test('FirmwareUpdateSequenceRule passes for valid firmware transition sequence',
         messageType: 'Event',
         payload: ['status' => 'Installing'],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $rule->check($context, $state);
@@ -64,7 +64,7 @@ test('FirmwareUpdateSequenceRule passes for valid firmware transition sequence',
         messageType: 'Event',
         payload: ['status' => 'Installed'],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $rule->check($context, $state);
@@ -87,7 +87,7 @@ test('FirmwareUpdateSequenceRule fails for invalid firmware transition', functio
         messageType: 'Event',
         payload: ['status' => 'Installed'],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $rule->check($context, $state);

@@ -21,11 +21,11 @@ test('EnvelopeFormatRule passes with valid envelope', function (): void {
             'messageId' => 'msg_ef_001',
             'messageType' => 'Request',
             'source' => 'Station',
-            'protocolVersion' => '0.1.0',
+            'protocolVersion' => '0.2.1',
             'timestamp' => '2026-03-09T10:00:05.000Z',
             'payload' => [],
         ],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $rule->check($context, app(StationStateService::class));
@@ -47,7 +47,7 @@ test('EnvelopeFormatRule fails with missing fields', function (): void {
             'action' => 'BootNotification',
             'payload' => [],
         ],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $rule->check($context, app(StationStateService::class));
@@ -71,11 +71,11 @@ test('EnvelopeFormatRule fails with invalid timestamp format', function (): void
             'messageId' => 'msg_ef_003',
             'messageType' => 'Request',
             'source' => 'Station',
-            'protocolVersion' => '0.1.0',
+            'protocolVersion' => '0.2.1',
             'timestamp' => '2026-03-09 10:00:05',
             'payload' => [],
         ],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $rule->check($context, app(StationStateService::class));

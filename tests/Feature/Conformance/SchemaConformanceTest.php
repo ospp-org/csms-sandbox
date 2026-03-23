@@ -91,7 +91,7 @@ function makeEnvelope(string $action, string $messageId, string $messageType, ar
         'messageId' => $messageId,
         'messageType' => $messageType,
         'source' => 'Station',
-        'protocolVersion' => '0.1.0',
+        'protocolVersion' => '0.2.1',
         'timestamp' => '2026-03-14T10:00:00.000Z',
         'payload' => $payload,
     ];
@@ -114,7 +114,7 @@ function assertEnvelopeConforms(array $envelope, string $expectedAction, string 
     expect($envelope['messageType'])->toBe('Response');
     expect($envelope['action'])->toBe($expectedAction);
     expect($envelope['messageId'])->toBe($expectedMessageId);
-    expect($envelope['protocolVersion'])->toBe('0.1.0');
+    expect($envelope['protocolVersion'])->toBe('0.2.1');
     expect($envelope['timestamp'])->toMatch('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/');
 }
 

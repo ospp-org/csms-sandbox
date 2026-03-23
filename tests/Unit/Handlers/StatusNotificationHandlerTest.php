@@ -23,7 +23,7 @@ test('StatusNotification updates bay status in Redis', function (): void {
             'status' => 'Available',
         ],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $handler->handle($context);
@@ -47,7 +47,7 @@ test('StatusNotification returns acknowledged', function (): void {
             'status' => 'Occupied',
         ],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $handler->handle($context);

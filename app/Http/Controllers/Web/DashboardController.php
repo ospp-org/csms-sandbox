@@ -108,7 +108,7 @@ final class DashboardController extends Controller
 
         $validated = $request->validate([
             'validation_mode' => 'sometimes|in:strict,lenient',
-            'protocol_version' => 'sometimes|in:' . config('sandbox.default_protocol_version'),
+            'protocol_version' => 'sometimes|in:' . implode(',', config('sandbox.supported_protocol_versions')),
         ]);
 
         $oldVersion = $tenant->protocol_version;

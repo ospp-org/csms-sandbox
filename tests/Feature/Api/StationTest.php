@@ -24,7 +24,7 @@ test('GET /api/v1/station returns station info', function (): void {
         ->assertJsonPath('mqtt.password_available', true)
         ->assertJsonPath('status.firmware_version', '2.0.0')
         ->assertJsonPath('status.bay_count', 4)
-        ->assertJsonPath('protocol_version', '0.1.0')
+        ->assertJsonPath('protocol_version', '0.2.1')
         ->assertJsonStructure([
             'station_id',
             'mqtt' => ['host', 'port_tls', 'port_plain', 'username'],

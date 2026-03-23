@@ -30,7 +30,7 @@ test('updates command to responded on Accepted', function (): void {
         messageType: 'Response',
         payload: ['status' => 'Accepted'],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
     $result = $handler->handle($context);
 
@@ -63,7 +63,7 @@ test('handles Rejected status', function (): void {
         messageType: 'Response',
         payload: ['status' => 'Rejected'],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
     $result = $handler->handle($context);
 

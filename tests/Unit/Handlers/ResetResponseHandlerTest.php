@@ -33,7 +33,7 @@ test('Accepted sets lifecycle to resetting', function (): void {
         messageType: 'Response',
         payload: ['status' => 'Accepted'],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $result = $handler->handle($context);
@@ -68,7 +68,7 @@ test('Rejected keeps lifecycle unchanged', function (): void {
         messageType: 'Response',
         payload: ['status' => 'Rejected'],
         envelope: [],
-        protocolVersion: '0.1.0',
+        protocolVersion: '0.2.1',
     );
 
     $handler->handle($context);
