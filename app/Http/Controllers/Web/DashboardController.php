@@ -52,7 +52,7 @@ final class DashboardController extends Controller
     {
         /** @var Tenant $tenant */
         $tenant = $request->user();
-        $version = $tenant->protocol_version ?? '0.1.0';
+        $version = $tenant->protocol_version ?? config('sandbox.default_protocol_version');
         $report = $conformance->getReport($tenant->id, $version);
 
         // Build category map for display
@@ -108,7 +108,7 @@ final class DashboardController extends Controller
 
         $validated = $request->validate([
             'validation_mode' => 'sometimes|in:strict,lenient',
-            'protocol_version' => 'sometimes|in:0.1.0',
+            'protocol_version' => 'sometimes|in:' . config('sandbox.default_protocol_version'),
         ]);
 
         $oldVersion = $tenant->protocol_version;
@@ -171,7 +171,7 @@ final class DashboardController extends Controller
     {
         /** @var Tenant $tenant */
         $tenant = $request->user();
-        $version = $tenant->protocol_version ?? '0.1.0';
+        $version = $tenant->protocol_version ?? config('sandbox.default_protocol_version');
 
         $report = $conformance->getReport($tenant->id, $version);
         $pdf = $exporter->toPdf($report, $tenant);
@@ -186,7 +186,7 @@ final class DashboardController extends Controller
     {
         /** @var Tenant $tenant */
         $tenant = $request->user();
-        $version = $tenant->protocol_version ?? '0.1.0';
+        $version = $tenant->protocol_version ?? config('sandbox.default_protocol_version');
 
         $report = $conformance->getReport($tenant->id, $version);
         $json = $exporter->toJson($report);
@@ -201,7 +201,7 @@ final class DashboardController extends Controller
     {
         /** @var Tenant $tenant */
         $tenant = $request->user();
-        $version = $tenant->protocol_version ?? '0.1.0';
+        $version = $tenant->protocol_version ?? config('sandbox.default_protocol_version');
 
         $conformance->reset($tenant->id, $version);
 

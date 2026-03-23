@@ -182,6 +182,15 @@ final class StationStateService
         Redis::hset(self::PREFIX . $stationId . ':meters', $bayId, (string) $timestamp);
     }
 
+    public function resetBaysToUnknown(string $stationId): void
+    {
+        $bayCount = (int) Redis::hget(self::PREFIX . $stationId, 'bay_count') ?: 0;
+
+        for ($i = 1; $i <= $bayCount; $i++) {
+            $this->setBayStatus($stationId, $i, 'Unknown');
+        }
+    }
+
     public function resetState(string $stationId, int $bayCount): void
     {
         Redis::hset(self::PREFIX . $stationId, 'lifecycle', 'online');

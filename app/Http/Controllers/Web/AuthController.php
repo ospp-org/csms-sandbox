@@ -56,7 +56,7 @@ final class AuthController extends Controller
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => $validated['password'],
-            'protocol_version' => '0.1.0',
+            'protocol_version' => config('sandbox.default_protocol_version'),
             'validation_mode' => 'strict',
             'email_verified_at' => now(),
         ]);

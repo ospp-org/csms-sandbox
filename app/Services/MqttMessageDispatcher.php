@@ -35,6 +35,7 @@ use App\Handlers\TransactionEventHandler;
 use App\Handlers\ConnectionLostHandler;
 use App\Handlers\DiagnosticsNotificationHandler;
 use App\Handlers\FirmwareStatusNotificationHandler;
+use App\Handlers\SessionEndedHandler;
 use App\Models\TenantStation;
 use Illuminate\Support\Facades\Log;
 
@@ -73,6 +74,7 @@ final class MqttMessageDispatcher
             'ConnectionLost' => ConnectionLostHandler::class,
             'DiagnosticsNotification' => DiagnosticsNotificationHandler::class,
             'FirmwareStatusNotification' => FirmwareStatusNotificationHandler::class,
+            'SessionEnded' => SessionEndedHandler::class,
         ],
     ];
 

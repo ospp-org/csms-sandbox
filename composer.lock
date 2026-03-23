@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5fc0df6366aaec063d1f90f3cfa80701",
+    "content-hash": "868c526c16874ce18bf9a078026b86fc",
     "packages": [
         {
             "name": "barryvdh/laravel-dompdf",
@@ -3341,16 +3341,16 @@
         },
         {
             "name": "ospp/protocol",
-            "version": "v0.2.1",
+            "version": "v0.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ospp-org/ospp-sdk-php.git",
-                "reference": "0957997ba691c2a3c148784466fa012eae4a827f"
+                "reference": "ac688574296a966e358b2cd8f8c39b06a127b5e7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ospp-org/ospp-sdk-php/zipball/0957997ba691c2a3c148784466fa012eae4a827f",
-                "reference": "0957997ba691c2a3c148784466fa012eae4a827f",
+                "url": "https://api.github.com/repos/ospp-org/ospp-sdk-php/zipball/ac688574296a966e358b2cd8f8c39b06a127b5e7",
+                "reference": "ac688574296a966e358b2cd8f8c39b06a127b5e7",
                 "shasum": ""
             },
             "require": {
@@ -3378,9 +3378,9 @@
             "description": "PHP SDK for the OSPP (Open Self-Service Point Protocol) — enums, envelope, crypto, state machines",
             "support": {
                 "issues": "https://github.com/ospp-org/ospp-sdk-php/issues",
-                "source": "https://github.com/ospp-org/ospp-sdk-php/tree/v0.2.1"
+                "source": "https://github.com/ospp-org/ospp-sdk-php/tree/v0.3.2"
             },
-            "time": "2026-03-04T08:22:49+00:00"
+            "time": "2026-03-22T09:40:49+00:00"
         },
         {
             "name": "paragonie/sodium_compat",

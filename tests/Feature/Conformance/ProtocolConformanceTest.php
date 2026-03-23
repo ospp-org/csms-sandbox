@@ -118,7 +118,7 @@ function sdkKebabCase(string $pascal): string
 
 test('sandbox handles all 26 MQTT actions defined in OsppAction SDK', function (): void {
     $sdkActions = OsppAction::mqttActions();
-    expect(count($sdkActions))->toBe(26);
+    expect(count($sdkActions))->toBe(27);
 
     [$tenant, $dispatcher] = sdkSetupStation('stn_aa000001');
 
@@ -486,5 +486,5 @@ test('every SDK MQTT action has at least one schema file', function (): void {
     }
 
     expect($missing)->toBe([], 'These SDK actions have no schema files');
-    expect(count($sdkActions))->toBe(26);
+    expect(count($sdkActions))->toBe(27);
 });

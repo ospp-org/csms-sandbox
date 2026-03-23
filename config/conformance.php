@@ -49,6 +49,7 @@ return [
         'MeterValues',
         'StartService',
         'StopService',
+        'SessionEnded',
         // Reservations (2)
         'ReserveBay',
         'CancelReservation',
@@ -82,7 +83,7 @@ return [
     */
     'categories' => [
         'core' => ['BootNotification', 'Heartbeat', 'StatusNotification', 'DataTransfer'],
-        'sessions' => ['MeterValues', 'StartService', 'StopService'],
+        'sessions' => ['MeterValues', 'StartService', 'StopService', 'SessionEnded'],
         'reservations' => ['ReserveBay', 'CancelReservation'],
         'device_management' => [
             'ChangeConfiguration', 'GetConfiguration',

@@ -20,7 +20,7 @@ final class ConformanceController extends Controller
     {
         /** @var Tenant $tenant */
         $tenant = $request->user();
-        $version = $tenant->protocol_version ?? '0.1.0';
+        $version = $tenant->protocol_version ?? config('sandbox.default_protocol_version');
 
         $report = $conformance->getReport($tenant->id, $version);
 
@@ -43,7 +43,7 @@ final class ConformanceController extends Controller
     {
         /** @var Tenant $tenant */
         $tenant = $request->user();
-        $version = $tenant->protocol_version ?? '0.1.0';
+        $version = $tenant->protocol_version ?? config('sandbox.default_protocol_version');
 
         $result = $conformance->getActionDetail($tenant->id, $version, $action);
 
@@ -58,7 +58,7 @@ final class ConformanceController extends Controller
     {
         /** @var Tenant $tenant */
         $tenant = $request->user();
-        $version = $tenant->protocol_version ?? '0.1.0';
+        $version = $tenant->protocol_version ?? config('sandbox.default_protocol_version');
 
         $count = $conformance->reset($tenant->id, $version);
 
@@ -72,7 +72,7 @@ final class ConformanceController extends Controller
     {
         /** @var Tenant $tenant */
         $tenant = $request->user();
-        $version = $tenant->protocol_version ?? '0.1.0';
+        $version = $tenant->protocol_version ?? config('sandbox.default_protocol_version');
 
         $report = $conformance->getReport($tenant->id, $version);
         $pdf = $exporter->toPdf($report, $tenant);
@@ -87,7 +87,7 @@ final class ConformanceController extends Controller
     {
         /** @var Tenant $tenant */
         $tenant = $request->user();
-        $version = $tenant->protocol_version ?? '0.1.0';
+        $version = $tenant->protocol_version ?? config('sandbox.default_protocol_version');
 
         $report = $conformance->getReport($tenant->id, $version);
         $json = $exporter->toJson($report);
