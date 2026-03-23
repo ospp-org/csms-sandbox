@@ -14,7 +14,7 @@ boot = {
     "messageId": "msg_001",
     "messageType": "Request",
     "source": "Station",
-    "protocolVersion": "0.1.0",
+    "protocolVersion": "{{ config('sandbox.default_protocol_version') }}",
     "timestamp": "2026-01-01T00:00:00.000Z",
     "payload": {
         "stationId": station_id,

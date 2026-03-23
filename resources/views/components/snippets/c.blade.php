@@ -17,7 +17,7 @@ esp_mqtt_client_subscribe(client,
 // Send BootNotification
 const char *boot = "{\"action\":\"BootNotification\","
     "\"messageId\":\"msg_001\",\"messageType\":\"Request\","
-    "\"source\":\"Station\",\"protocolVersion\":\"0.1.0\","
+    "\"source\":\"Station\",\"protocolVersion\":\"{{ config('sandbox.default_protocol_version') }}\","
     "\"timestamp\":\"2026-01-01T00:00:00.000Z\","
     "\"payload\":{"
     "\"stationId\":\"{{ $station->station_id }}\","

@@ -16,7 +16,7 @@
         <div>
             <label class="block text-sm text-gray-600 mb-1">Protocol Version</label>
             <select name="protocol_version" class="w-full border rounded px-3 py-2 text-sm">
-                <option value="0.1.0" {{ $tenant->protocol_version === '0.1.0' ? 'selected' : '' }}>0.1.0</option>
+                <option value="{{ config('sandbox.default_protocol_version') }}" {{ $tenant->protocol_version === config('sandbox.default_protocol_version') ? 'selected' : '' }}>{{ config('sandbox.default_protocol_version') }}</option>
             </select>
             <p class="text-xs text-yellow-600 mt-1">Changing protocol version will reset conformance results.</p>
         </div>

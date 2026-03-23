@@ -16,7 +16,7 @@ client.on('connect', () => {
             messageId: 'msg_001',
             messageType: 'Request',
             source: 'Station',
-            protocolVersion: '0.1.0',
+            protocolVersion: '{{ config('sandbox.default_protocol_version') }}',
             timestamp: new Date().toISOString().replace(/(\.\d{3})\d*Z/, '$1Z'),
             payload: {
                 stationId: stationId,
