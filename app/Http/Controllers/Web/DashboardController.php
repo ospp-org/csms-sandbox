@@ -27,10 +27,11 @@ final class DashboardController extends Controller
     {
         /** @var Tenant $tenant */
         $tenant = $request->user();
-        $station = $tenant->station;
+        $stations = $tenant->stations()->orderBy('station_id')->get();
+        $station = $this->resolveStation($request, $tenant);
         $mqttPassword = $mqttCredentials->getPlainPassword($station);
 
-        return view('dashboard.setup', compact('tenant', 'station', 'mqttPassword'));
+        return view('dashboard.setup', compact('tenant', 'stations', 'station', 'mqttPassword'));
     }
 
     public function monitor(Request $request): View

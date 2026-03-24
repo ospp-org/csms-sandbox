@@ -3,7 +3,16 @@
 @section('content')
 
 <div class="max-w-3xl">
-    <h2 class="text-2xl font-bold mb-6">MQTT Connection</h2>
+    <div class="flex items-center space-x-4 mb-6">
+        <h2 class="text-2xl font-bold">MQTT Connection</h2>
+        @if(isset($stations) && $stations->count() > 1)
+        <select onchange="window.location.href='/dashboard/setup?station='+this.value" class="border rounded px-2 py-1 text-sm">
+            @foreach($stations as $s)
+            <option value="{{ $s->station_id }}" {{ $station->station_id === $s->station_id ? 'selected' : '' }}>{{ $s->station_id }}</option>
+            @endforeach
+        </select>
+        @endif
+    </div>
 
     <div class="bg-white rounded-lg shadow p-6 mb-6">
         <div class="grid grid-cols-2 gap-4">

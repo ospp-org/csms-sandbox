@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Http\Controllers\Api\CommandController;
 use App\Http\Controllers\Api\ConformanceController;
+use App\Http\Controllers\Api\SimulatorCertificateController;
 use App\Http\Controllers\Api\StatusController;
 use App\Http\Controllers\Api\StationController;
 use App\Http\Controllers\Auth\LoginController;
@@ -36,4 +37,6 @@ Route::prefix('v1')->middleware('auth:jwt')->group(function (): void {
     Route::get('conformance/export/json', [ConformanceController::class, 'exportJson']);
     Route::post('conformance/reset', [ConformanceController::class, 'reset']);
     Route::get('conformance/{action}', [ConformanceController::class, 'show']);
+
+    Route::get('simulator/certificates', SimulatorCertificateController::class);
 });
