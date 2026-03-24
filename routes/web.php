@@ -5,6 +5,7 @@ use App\Http\Controllers\Mqtt\MqttAclController;
 use App\Http\Controllers\Mqtt\MqttAuthController;
 use App\Http\Controllers\Mqtt\MqttWebhookController;
 use App\Http\Controllers\Web\AuthController;
+use App\Http\Controllers\Web\CertificateController;
 use App\Http\Controllers\Web\DashboardController;
 use Illuminate\Support\Facades\Route;
 
@@ -36,6 +37,8 @@ Route::prefix('dashboard')->middleware('auth')->group(function (): void {
     Route::get('conformance/export/json', [DashboardController::class, 'exportJson']);
     Route::post('conformance/reset', [DashboardController::class, 'resetConformance']);
     Route::get('history', [DashboardController::class, 'history'])->name('dashboard.history');
+    Route::get('certificates/{file}', [CertificateController::class, 'download'])->where('file', 'ca|cert|key');
+    Route::post('certificates/regenerate', [CertificateController::class, 'regenerate']);
     Route::get('settings', [DashboardController::class, 'settings'])->name('dashboard.settings');
     Route::patch('settings', [DashboardController::class, 'updateSettings']);
 });

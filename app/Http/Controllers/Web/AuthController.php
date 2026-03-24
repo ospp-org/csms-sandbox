@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use App\Models\Tenant;
+use App\Services\CertificateService;
 use App\Services\MqttCredentialService;
 use Database\Seeders\ConformanceSeeder;
 use Illuminate\Http\RedirectResponse;
@@ -44,6 +45,7 @@ final class AuthController extends Controller
     public function register(
         Request $request,
         MqttCredentialService $mqttCredentials,
+        CertificateService $certificateService,
         ConformanceSeeder $conformanceSeeder,
     ): RedirectResponse {
         $validated = $request->validate([
@@ -61,7 +63,12 @@ final class AuthController extends Controller
             'email_verified_at' => now(),
         ]);
 
-        $mqttCredentials->generateForTenant($tenant);
+        $station = $mqttCredentials->generateForTenant($tenant);
+
+        if ($certificateService->isConfigured()) {
+            $certificateService->generateStationCert($station);
+        }
+
         $conformanceSeeder->run($tenant->id);
 
         Auth::login($tenant);

@@ -24,6 +24,10 @@ final class TenantStation extends Model
         'mqtt_username',
         'mqtt_password_hash',
         'mqtt_password_encrypted',
+        'station_cert',
+        'station_key',
+        'cert_expires_at',
+        'cert_issued_at',
         'protocol_version',
         'is_connected',
         'last_connected_at',
@@ -41,6 +45,9 @@ final class TenantStation extends Model
             'last_connected_at' => 'datetime',
             'last_boot_at' => 'datetime',
             'mqtt_password_encrypted' => 'encrypted',
+            'station_key' => 'encrypted', // Uses APP_KEY — rotating APP_KEY invalidates all station keys (regenerate certs)
+            'cert_expires_at' => 'datetime',
+            'cert_issued_at' => 'datetime',
         ];
     }
 

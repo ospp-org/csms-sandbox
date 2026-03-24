@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Providers;
 
 use App\Auth\JwtGuard;
+use App\Contracts\CertificateServiceInterface;
+use App\Services\CertificateService;
 use App\Services\JwtService;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Contracts\Foundation\Application;
@@ -18,6 +20,7 @@ final class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(JwtService::class);
+        $this->app->bind(CertificateServiceInterface::class, CertificateService::class);
     }
 
     public function boot(): void

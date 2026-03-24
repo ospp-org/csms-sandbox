@@ -64,4 +64,15 @@ return [
     */
     'mqtt_public_host' => env('SANDBOX_MQTT_HOST', 'csms-sandbox.ospp-standard.org'),
 
+    /*
+    |--------------------------------------------------------------------------
+    | PKI — Station Certificate Authority
+    |--------------------------------------------------------------------------
+    */
+    'pki' => [
+        'station_ca_cert' => env('PKI_STATION_CA_CERT', '/opt/pki/station-ca/station-ca.pem'),
+        'station_ca_key' => env('PKI_STATION_CA_KEY', '/opt/pki/station-ca/station-ca.key'),
+        'ca_chain' => env('PKI_CA_CHAIN', '/opt/pki/station-ca/chain.pem'),
+    ],
+
 ];

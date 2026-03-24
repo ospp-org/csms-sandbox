@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Models\Tenant;
+use App\Services\CertificateService;
 use App\Services\JwtService;
 use App\Services\MqttCredentialService;
 use Database\Seeders\ConformanceSeeder;
@@ -18,6 +19,7 @@ final class RegisterController extends Controller
         RegisterRequest $request,
         JwtService $jwt,
         MqttCredentialService $mqttCredentials,
+        CertificateService $certificateService,
         ConformanceSeeder $conformanceSeeder,
     ): JsonResponse {
         $tenant = Tenant::create([
@@ -31,6 +33,10 @@ final class RegisterController extends Controller
 
         $station = $mqttCredentials->generateForTenant($tenant);
         $plainPassword = $mqttCredentials->getPlainPassword($station);
+
+        if ($certificateService->isConfigured()) {
+            $certificateService->generateStationCert($station);
+        }
 
         $conformanceSeeder->run($tenant->id);
 
