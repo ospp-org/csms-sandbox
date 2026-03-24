@@ -65,6 +65,7 @@ final class ConformanceService
 
         $this->recordResult(
             $context->tenantId,
+            $context->stationId,
             $context->protocolVersion,
             $context->action,
             $schemaResult,
@@ -81,6 +82,7 @@ final class ConformanceService
      */
     public function recordResult(
         string $tenantId,
+        string $stationId,
         string $protocolVersion,
         string $action,
         ValidationResult $schemaResult,
@@ -98,11 +100,12 @@ final class ConformanceService
 
         ConformanceResult::updateOrCreate(
             [
-                'tenant_id' => $tenantId,
+                'station_id' => $stationId,
                 'protocol_version' => $protocolVersion,
                 'action' => $action,
             ],
             [
+                'tenant_id' => $tenantId,
                 'status' => $status,
                 'last_tested_at' => now(),
                 'last_payload' => $payload,
@@ -116,9 +119,9 @@ final class ConformanceService
         );
     }
 
-    public function getReport(string $tenantId, string $protocolVersion): ConformanceReport
+    public function getReport(string $stationId, string $protocolVersion): ConformanceReport
     {
-        $results = ConformanceResult::where('tenant_id', $tenantId)
+        $results = ConformanceResult::where('station_id', $stationId)
             ->where('protocol_version', $protocolVersion)
             ->get();
 
@@ -130,7 +133,7 @@ final class ConformanceService
         foreach ($configActions as $action) {
             if (! in_array($action, $existingActions, true)) {
                 $results->push(new ConformanceResult([
-                    'tenant_id' => $tenantId,
+                    'station_id' => $stationId,
                     'protocol_version' => $protocolVersion,
                     'action' => $action,
                     'status' => 'not_tested',
@@ -154,17 +157,17 @@ final class ConformanceService
         return new ConformanceReport($sorted, $protocolVersion);
     }
 
-    public function getActionDetail(string $tenantId, string $protocolVersion, string $action): ?ConformanceResult
+    public function getActionDetail(string $stationId, string $protocolVersion, string $action): ?ConformanceResult
     {
-        return ConformanceResult::where('tenant_id', $tenantId)
+        return ConformanceResult::where('station_id', $stationId)
             ->where('protocol_version', $protocolVersion)
             ->where('action', $action)
             ->first();
     }
 
-    public function reset(string $tenantId, string $protocolVersion): int
+    public function reset(string $stationId, string $protocolVersion): int
     {
-        return ConformanceResult::where('tenant_id', $tenantId)
+        return ConformanceResult::where('station_id', $stationId)
             ->where('protocol_version', $protocolVersion)
             ->update([
                 'status' => 'not_tested',

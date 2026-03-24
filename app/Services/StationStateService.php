@@ -196,6 +196,7 @@ final class StationStateService
         Redis::hset(self::PREFIX . $stationId, 'lifecycle', 'online');
         Redis::hset(self::PREFIX . $stationId, 'bay_count', (string) $bayCount);
         Redis::hset(self::PREFIX . $stationId, 'heartbeat_interval', '30');
+        Redis::hdel(self::PREFIX . $stationId, 'last_heartbeat');
 
         for ($i = 1; $i <= $bayCount; $i++) {
             $key = self::PREFIX . $stationId . ':bay:' . $i;

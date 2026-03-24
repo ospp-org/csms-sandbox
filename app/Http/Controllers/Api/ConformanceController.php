@@ -7,7 +7,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\ConformanceResult;
 use App\Models\Tenant;
-
+use App\Models\TenantStation;
+use App\Traits\ResolvesStation;
 use App\Services\ConformanceService;
 use App\Services\ReportExporter;
 use Illuminate\Http\JsonResponse;
@@ -16,15 +17,19 @@ use Illuminate\Http\Response;
 
 final class ConformanceController extends Controller
 {
+    use ResolvesStation;
+
     public function index(Request $request, ConformanceService $conformance): JsonResponse
     {
         /** @var Tenant $tenant */
         $tenant = $request->user();
+        $station = $this->resolveStation($request, $tenant);
         $version = $tenant->protocol_version ?? config('sandbox.default_protocol_version');
 
-        $report = $conformance->getReport($tenant->id, $version);
+        $report = $conformance->getReport($station->station_id, $version);
 
         return new JsonResponse([
+            'station_id' => $station->station_id,
             'protocol_version' => $report->protocolVersion,
             'score' => [
                 'passed' => $report->passed,
@@ -43,9 +48,10 @@ final class ConformanceController extends Controller
     {
         /** @var Tenant $tenant */
         $tenant = $request->user();
+        $station = $this->resolveStation($request, $tenant);
         $version = $tenant->protocol_version ?? config('sandbox.default_protocol_version');
 
-        $result = $conformance->getActionDetail($tenant->id, $version, $action);
+        $result = $conformance->getActionDetail($station->station_id, $version, $action);
 
         if ($result === null) {
             return new JsonResponse(['error' => 'NOT_FOUND', 'message' => "No result for action: {$action}"], 404);
@@ -58,9 +64,10 @@ final class ConformanceController extends Controller
     {
         /** @var Tenant $tenant */
         $tenant = $request->user();
+        $station = $this->resolveStation($request, $tenant);
         $version = $tenant->protocol_version ?? config('sandbox.default_protocol_version');
 
-        $count = $conformance->reset($tenant->id, $version);
+        $count = $conformance->reset($station->station_id, $version);
 
         return new JsonResponse([
             'message' => 'Conformance results reset',
@@ -72,9 +79,10 @@ final class ConformanceController extends Controller
     {
         /** @var Tenant $tenant */
         $tenant = $request->user();
+        $station = $this->resolveStation($request, $tenant);
         $version = $tenant->protocol_version ?? config('sandbox.default_protocol_version');
 
-        $report = $conformance->getReport($tenant->id, $version);
+        $report = $conformance->getReport($station->station_id, $version);
         $pdf = $exporter->toPdf($report, $tenant);
 
         return new Response($pdf, 200, [
@@ -87,9 +95,10 @@ final class ConformanceController extends Controller
     {
         /** @var Tenant $tenant */
         $tenant = $request->user();
+        $station = $this->resolveStation($request, $tenant);
         $version = $tenant->protocol_version ?? config('sandbox.default_protocol_version');
 
-        $report = $conformance->getReport($tenant->id, $version);
+        $report = $conformance->getReport($station->station_id, $version);
         $json = $exporter->toJson($report);
 
         return new Response($json, 200, [

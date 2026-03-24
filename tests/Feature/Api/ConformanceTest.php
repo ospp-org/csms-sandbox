@@ -4,17 +4,21 @@ declare(strict_types=1);
 
 use App\Models\ConformanceResult;
 use App\Models\Tenant;
+use App\Models\TenantStation;
 
 test('GET /api/v1/conformance returns conformance report', function (): void {
     $tenant = Tenant::factory()->create();
+    $station = TenantStation::factory()->for($tenant)->create(['station_id' => 'stn_apict001']);
 
     ConformanceResult::factory()->for($tenant)->create([
+        'station_id' => 'stn_apict001',
         'action' => 'BootNotification',
         'status' => 'passed',
         'last_tested_at' => now(),
         'behavior_checks' => [['rule' => 'boot_first', 'passed' => true, 'detail' => null]],
     ]);
     ConformanceResult::factory()->for($tenant)->create([
+        'station_id' => 'stn_apict001',
         'action' => 'Heartbeat',
         'status' => 'failed',
         'last_tested_at' => now(),
@@ -26,6 +30,7 @@ test('GET /api/v1/conformance returns conformance report', function (): void {
 
     $response->assertStatus(200)
         ->assertJsonStructure([
+            'station_id',
             'protocol_version',
             'score' => ['passed', 'failed', 'partial', 'not_tested', 'total_tested', 'percentage'],
             'categories',
@@ -38,8 +43,10 @@ test('GET /api/v1/conformance returns conformance report', function (): void {
 
 test('GET /api/v1/conformance/{action} returns single result', function (): void {
     $tenant = Tenant::factory()->create();
+    TenantStation::factory()->for($tenant)->create(['station_id' => 'stn_apict002']);
 
     ConformanceResult::factory()->for($tenant)->create([
+        'station_id' => 'stn_apict002',
         'action' => 'BootNotification',
         'status' => 'passed',
         'last_tested_at' => now(),
@@ -55,6 +62,7 @@ test('GET /api/v1/conformance/{action} returns single result', function (): void
 
 test('GET /api/v1/conformance/{action} returns 404 for unknown', function (): void {
     $tenant = Tenant::factory()->create();
+    TenantStation::factory()->for($tenant)->create();
 
     $response = $this->actingAs($tenant, 'jwt')
         ->getJson('/api/v1/conformance/FakeAction');
@@ -64,13 +72,16 @@ test('GET /api/v1/conformance/{action} returns 404 for unknown', function (): vo
 
 test('POST /api/v1/conformance/reset resets all results', function (): void {
     $tenant = Tenant::factory()->create();
+    TenantStation::factory()->for($tenant)->create(['station_id' => 'stn_apict004']);
 
     ConformanceResult::factory()->for($tenant)->create([
+        'station_id' => 'stn_apict004',
         'action' => 'BootNotification',
         'status' => 'passed',
         'last_tested_at' => now(),
     ]);
     ConformanceResult::factory()->for($tenant)->create([
+        'station_id' => 'stn_apict004',
         'action' => 'Heartbeat',
         'status' => 'failed',
         'last_tested_at' => now(),
@@ -84,19 +95,14 @@ test('POST /api/v1/conformance/reset resets all results', function (): void {
         ->assertJsonPath('actions_reset', 2);
 
     $this->assertDatabaseMissing('conformance_results', [
-        'tenant_id' => $tenant->id,
+        'station_id' => 'stn_apict004',
         'status' => 'passed',
     ]);
 });
 
 test('GET /api/v1/conformance/export/json returns downloadable JSON', function (): void {
     $tenant = Tenant::factory()->create();
-
-    ConformanceResult::factory()->for($tenant)->create([
-        'action' => 'BootNotification',
-        'status' => 'passed',
-        'last_tested_at' => now(),
-    ]);
+    TenantStation::factory()->for($tenant)->create();
 
     $response = $this->actingAs($tenant, 'jwt')
         ->getJson('/api/v1/conformance/export/json');
@@ -107,12 +113,7 @@ test('GET /api/v1/conformance/export/json returns downloadable JSON', function (
 
 test('GET /api/v1/conformance/export/pdf returns PDF', function (): void {
     $tenant = Tenant::factory()->create();
-
-    ConformanceResult::factory()->for($tenant)->create([
-        'action' => 'BootNotification',
-        'status' => 'passed',
-        'last_tested_at' => now(),
-    ]);
+    TenantStation::factory()->for($tenant)->create();
 
     $response = $this->actingAs($tenant, 'jwt')
         ->get('/api/v1/conformance/export/pdf');

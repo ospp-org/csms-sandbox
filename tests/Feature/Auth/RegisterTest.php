@@ -25,10 +25,8 @@ test('POST /api/v1/auth/register creates tenant with station and returns JWT', f
     $this->assertDatabaseHas('tenants', ['email' => 'test@example.com']);
     $this->assertDatabaseHas('tenant_stations', ['tenant_id' => $response->json('tenant.id')]);
 
-    // Conformance results should be seeded
-    expect($this->app->make('db')->table('conformance_results')
-        ->where('tenant_id', $response->json('tenant.id'))
-        ->count())->toBe(26);
+    // Conformance results are created dynamically by getReport(), not seeded
+    // ConformanceSeeder is now a no-op
 });
 
 test('POST /api/v1/auth/register fails with duplicate email', function (): void {

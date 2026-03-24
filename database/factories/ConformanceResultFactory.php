@@ -19,6 +19,7 @@ final class ConformanceResultFactory extends Factory
     {
         return [
             'tenant_id' => Tenant::factory(),
+            'station_id' => 'stn_' . fake()->unique()->regexify('[0-9a-f]{8}'),
             'protocol_version' => config('sandbox.default_protocol_version', '0.2.1'),
             'action' => fake()->randomElement([
                 'BootNotification', 'Heartbeat', 'StatusNotification',

@@ -7,6 +7,8 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use App\Models\MessageLog;
 use App\Models\Tenant;
+use App\Models\TenantStation;
+use App\Traits\ResolvesStation;
 use App\Services\CommandService;
 use App\Services\ConformanceService;
 use App\Services\MqttCredentialService;
@@ -20,6 +22,7 @@ use Illuminate\View\View;
 
 final class DashboardController extends Controller
 {
+    use ResolvesStation;
     public function setup(Request $request, MqttCredentialService $mqttCredentials): View
     {
         /** @var Tenant $tenant */
@@ -52,10 +55,11 @@ final class DashboardController extends Controller
     {
         /** @var Tenant $tenant */
         $tenant = $request->user();
+        $stations = TenantStation::where('tenant_id', $tenant->id)->orderBy('station_id')->get();
+        $selectedStation = $this->resolveStation($request, $tenant);
         $version = $tenant->protocol_version ?? config('sandbox.default_protocol_version');
-        $report = $conformance->getReport($tenant->id, $version);
+        $report = $conformance->getReport($selectedStation->station_id, $version);
 
-        // Build category map for display
         $categoryMap = config('conformance.categories');
         $actionToCategory = [];
         foreach ($categoryMap as $category => $actions) {
@@ -64,7 +68,7 @@ final class DashboardController extends Controller
             }
         }
 
-        return view('dashboard.conformance', compact('report', 'actionToCategory'));
+        return view('dashboard.conformance', compact('report', 'actionToCategory', 'stations', 'selectedStation'));
     }
 
     public function history(Request $request): View
@@ -116,7 +120,9 @@ final class DashboardController extends Controller
         $tenant->update($validated);
 
         if (isset($validated['protocol_version']) && $validated['protocol_version'] !== $oldVersion) {
-            $conformance->reset($tenant->id, $validated['protocol_version']);
+            $tenant->stations()->each(function (TenantStation $station) use ($conformance, $validated): void {
+                $conformance->reset($station->station_id, $validated['protocol_version']);
+            });
         }
 
         return redirect('/dashboard/settings')->with('success', 'Settings updated.');
@@ -171,9 +177,10 @@ final class DashboardController extends Controller
     {
         /** @var Tenant $tenant */
         $tenant = $request->user();
+        $station = $this->resolveStation($request, $tenant);
         $version = $tenant->protocol_version ?? config('sandbox.default_protocol_version');
 
-        $report = $conformance->getReport($tenant->id, $version);
+        $report = $conformance->getReport($station->station_id, $version);
         $pdf = $exporter->toPdf($report, $tenant);
 
         return new Response($pdf, 200, [
@@ -186,9 +193,10 @@ final class DashboardController extends Controller
     {
         /** @var Tenant $tenant */
         $tenant = $request->user();
+        $station = $this->resolveStation($request, $tenant);
         $version = $tenant->protocol_version ?? config('sandbox.default_protocol_version');
 
-        $report = $conformance->getReport($tenant->id, $version);
+        $report = $conformance->getReport($station->station_id, $version);
         $json = $exporter->toJson($report);
 
         return new Response($json, 200, [
@@ -201,10 +209,12 @@ final class DashboardController extends Controller
     {
         /** @var Tenant $tenant */
         $tenant = $request->user();
+        $station = $this->resolveStation($request, $tenant);
         $version = $tenant->protocol_version ?? config('sandbox.default_protocol_version');
 
-        $conformance->reset($tenant->id, $version);
+        $conformance->reset($station->station_id, $version);
 
-        return redirect('/dashboard/conformance')->with('success', 'Conformance results reset.');
+        return redirect('/dashboard/conformance?station=' . $station->station_id)->with('success', 'Conformance results reset.');
     }
+
 }

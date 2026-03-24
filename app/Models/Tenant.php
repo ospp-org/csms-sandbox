@@ -44,6 +44,14 @@ final class Tenant extends Authenticatable
         return $this->hasOne(TenantStation::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<TenantStation, $this>
+     */
+    public function stations(): HasMany
+    {
+        return $this->hasMany(TenantStation::class);
+    }
+
     public function messageLog(): HasMany
     {
         return $this->hasMany(MessageLog::class);

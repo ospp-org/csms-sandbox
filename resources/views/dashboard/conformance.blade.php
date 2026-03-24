@@ -4,13 +4,22 @@
 
 <div>
     <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-bold">Conformance Report</h2>
+        <div class="flex items-center space-x-4">
+            <h2 class="text-2xl font-bold">Conformance Report</h2>
+            @if(isset($stations) && $stations->count() > 1)
+            <select onchange="window.location.href='/dashboard/conformance?station='+this.value" class="border rounded px-2 py-1 text-sm">
+                @foreach($stations as $s)
+                <option value="{{ $s->station_id }}" {{ $selectedStation->station_id === $s->station_id ? 'selected' : '' }}>{{ $s->station_id }}</option>
+                @endforeach
+            </select>
+            @endif
+        </div>
         <div class="flex space-x-2">
-            <a href="/dashboard/conformance/export/json" class="px-3 py-1 rounded text-sm bg-gray-200 text-gray-700 hover:bg-gray-300">Export JSON</a>
-            <a href="/dashboard/conformance/export/pdf" class="px-3 py-1 rounded text-sm bg-gray-200 text-gray-700 hover:bg-gray-300">Export PDF</a>
-            <form method="POST" action="/dashboard/conformance/reset" class="inline">
+            <a href="/dashboard/conformance/export/json?station={{ $selectedStation->station_id ?? '' }}" class="px-3 py-1 rounded text-sm bg-gray-200 text-gray-700 hover:bg-gray-300">Export JSON</a>
+            <a href="/dashboard/conformance/export/pdf?station={{ $selectedStation->station_id ?? '' }}" class="px-3 py-1 rounded text-sm bg-gray-200 text-gray-700 hover:bg-gray-300">Export PDF</a>
+            <form method="POST" action="/dashboard/conformance/reset?station={{ $selectedStation->station_id ?? '' }}" class="inline">
                 @csrf
-                <button type="submit" class="px-3 py-1 rounded text-sm bg-red-50 text-red-600 hover:bg-red-100" onclick="return confirm('Reset all conformance results?')">Reset</button>
+                <button type="submit" class="px-3 py-1 rounded text-sm bg-red-50 text-red-600 hover:bg-red-100" onclick="return confirm('Reset conformance results for {{ $selectedStation->station_id ?? '' }}?')">Reset</button>
             </form>
         </div>
     </div>

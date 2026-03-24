@@ -16,6 +16,7 @@ final class ConformanceResult extends Model
 
     protected $fillable = [
         'tenant_id',
+        'station_id',
         'protocol_version',
         'action',
         'status',

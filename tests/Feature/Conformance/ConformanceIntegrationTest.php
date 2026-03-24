@@ -47,7 +47,7 @@ test('BootNotification dispatched through pipeline records conformance result', 
     app(MqttMessageDispatcher::class)->dispatch('stn_ci000001', $envelope);
 
     $this->assertDatabaseHas('conformance_results', [
-        'tenant_id' => $tenant->id,
+        'station_id' => 'stn_ci000001',
         'action' => 'BootNotification',
         'status' => 'passed',
     ]);
@@ -75,7 +75,7 @@ test('invalid schema records failed conformance result', function (): void {
     app(MqttMessageDispatcher::class)->dispatch('stn_ci000002', $envelope);
 
     $this->assertDatabaseHas('conformance_results', [
-        'tenant_id' => $tenant->id,
+        'station_id' => 'stn_ci000002',
         'action' => 'BootNotification',
         'status' => 'failed',
     ]);

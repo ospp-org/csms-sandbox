@@ -7,6 +7,7 @@ use App\Dto\RuleResult;
 use App\Dto\ValidationResult;
 use App\Models\ConformanceResult;
 use App\Models\Tenant;
+use App\Models\TenantStation;
 use App\Services\ConformanceService;
 
 test('recordResult creates passed result when schema and behavior pass', function (): void {
@@ -15,14 +16,15 @@ test('recordResult creates passed result when schema and behavior pass', functio
 
     $service->recordResult(
         $tenant->id,
-        '0.1.0',
+        'stn_cs000001',
+        config('sandbox.default_protocol_version'),
         'BootNotification',
         ValidationResult::valid(),
         [new RuleResult(true, 'boot_first'), new RuleResult(true, 'envelope_format')],
-        ['stationId' => 'stn_a0000001'],
+        ['stationId' => 'stn_cs000001'],
     );
 
-    $result = ConformanceResult::where('tenant_id', $tenant->id)
+    $result = ConformanceResult::where('station_id', 'stn_cs000001')
         ->where('action', 'BootNotification')
         ->first();
 
@@ -37,14 +39,15 @@ test('recordResult creates failed result when schema fails', function (): void {
 
     $service->recordResult(
         $tenant->id,
-        '0.1.0',
+        'stn_cs000002',
+        config('sandbox.default_protocol_version'),
         'Heartbeat',
         ValidationResult::invalid([['path' => '/payload', 'message' => 'Missing field', 'keyword' => 'required']]),
         [new RuleResult(true, 'heartbeat_timing')],
         [],
     );
 
-    $result = ConformanceResult::where('tenant_id', $tenant->id)
+    $result = ConformanceResult::where('station_id', 'stn_cs000002')
         ->where('action', 'Heartbeat')
         ->first();
 
@@ -58,14 +61,15 @@ test('recordResult creates partial result when schema passes but behavior fails'
 
     $service->recordResult(
         $tenant->id,
-        '0.1.0',
+        'stn_cs000003',
+        config('sandbox.default_protocol_version'),
         'StatusNotification',
         ValidationResult::valid(),
         [new RuleResult(true, 'envelope_format'), new RuleResult(false, 'bay_transition', 'Invalid transition')],
         [],
     );
 
-    $result = ConformanceResult::where('tenant_id', $tenant->id)
+    $result = ConformanceResult::where('station_id', 'stn_cs000003')
         ->where('action', 'StatusNotification')
         ->first();
 
@@ -74,14 +78,15 @@ test('recordResult creates partial result when schema passes but behavior fails'
 
 test('getReport returns correct scoring', function (): void {
     $tenant = Tenant::factory()->create();
+    $stationId = 'stn_cs000004';
 
-    ConformanceResult::factory()->for($tenant)->create(['action' => 'BootNotification', 'status' => 'passed', 'last_tested_at' => now()]);
-    ConformanceResult::factory()->for($tenant)->create(['action' => 'Heartbeat', 'status' => 'passed', 'last_tested_at' => now()]);
-    ConformanceResult::factory()->for($tenant)->create(['action' => 'StatusNotification', 'status' => 'failed', 'last_tested_at' => now()]);
-    ConformanceResult::factory()->for($tenant)->create(['action' => 'DataTransfer', 'status' => 'not_tested']);
+    ConformanceResult::factory()->for($tenant)->create(['station_id' => $stationId, 'action' => 'BootNotification', 'status' => 'passed', 'last_tested_at' => now()]);
+    ConformanceResult::factory()->for($tenant)->create(['station_id' => $stationId, 'action' => 'Heartbeat', 'status' => 'passed', 'last_tested_at' => now()]);
+    ConformanceResult::factory()->for($tenant)->create(['station_id' => $stationId, 'action' => 'StatusNotification', 'status' => 'failed', 'last_tested_at' => now()]);
+    ConformanceResult::factory()->for($tenant)->create(['station_id' => $stationId, 'action' => 'DataTransfer', 'status' => 'not_tested']);
 
     $service = app(ConformanceService::class);
-    $report = $service->getReport($tenant->id, config('sandbox.default_protocol_version'));
+    $report = $service->getReport($stationId, config('sandbox.default_protocol_version'));
 
     expect($report->passed)->toBe(2);
     expect($report->failed)->toBe(1);
@@ -92,26 +97,28 @@ test('getReport returns correct scoring', function (): void {
 
 test('reset clears all results', function (): void {
     $tenant = Tenant::factory()->create();
+    $stationId = 'stn_cs000005';
 
-    ConformanceResult::factory()->for($tenant)->create(['action' => 'BootNotification', 'status' => 'passed', 'last_tested_at' => now()]);
-    ConformanceResult::factory()->for($tenant)->create(['action' => 'Heartbeat', 'status' => 'failed', 'last_tested_at' => now()]);
+    ConformanceResult::factory()->for($tenant)->create(['station_id' => $stationId, 'action' => 'BootNotification', 'status' => 'passed', 'last_tested_at' => now()]);
+    ConformanceResult::factory()->for($tenant)->create(['station_id' => $stationId, 'action' => 'Heartbeat', 'status' => 'failed', 'last_tested_at' => now()]);
 
     $service = app(ConformanceService::class);
-    $count = $service->reset($tenant->id, config('sandbox.default_protocol_version'));
+    $count = $service->reset($stationId, config('sandbox.default_protocol_version'));
 
     expect($count)->toBe(2);
 
-    $results = ConformanceResult::where('tenant_id', $tenant->id)->get();
+    $results = ConformanceResult::where('station_id', $stationId)->get();
     expect($results->every(fn ($r) => $r->status === 'not_tested'))->toBeTrue();
 });
 
 test('evaluate runs all rules and records result', function (): void {
     $tenant = Tenant::factory()->create();
+    TenantStation::factory()->for($tenant)->create(['station_id' => 'stn_cs000006']);
     $service = app(ConformanceService::class);
 
     $context = new HandlerContext(
         tenantId: $tenant->id,
-        stationId: 'stn_ev000001',
+        stationId: 'stn_cs000006',
         action: 'BootNotification',
         messageId: 'msg_ev_001',
         messageType: 'Request',
@@ -134,7 +141,7 @@ test('evaluate runs all rules and records result', function (): void {
     expect(count($results))->toBe(14);
 
     $this->assertDatabaseHas('conformance_results', [
-        'tenant_id' => $tenant->id,
+        'station_id' => 'stn_cs000006',
         'action' => 'BootNotification',
     ]);
 });

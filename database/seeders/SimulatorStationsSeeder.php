@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
+use App\Contracts\CertificateServiceInterface;
 use App\Models\Tenant;
 use App\Models\TenantStation;
-use App\Contracts\CertificateServiceInterface;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -28,13 +28,13 @@ final class SimulatorStationsSeeder extends Seeder
         $certService = app(CertificateServiceInterface::class);
         $pkiConfigured = $certService->isConfigured();
         $created = 0;
-        $skipped = 0;
+        $updated = 0;
 
         for ($i = 1; $i <= self::STATION_COUNT; $i++) {
             $stationId = 'stn_' . str_pad(dechex($i), 8, '0', STR_PAD_LEFT);
-            $mqttPassword = bin2hex(random_bytes(16));
+            $mqttPassword = 'sim-' . $stationId;
 
-            $station = TenantStation::firstOrCreate(
+            $station = TenantStation::updateOrCreate(
                 ['station_id' => $stationId],
                 [
                     'tenant_id' => $tenant->id,
@@ -48,19 +48,19 @@ final class SimulatorStationsSeeder extends Seeder
 
             if ($station->wasRecentlyCreated) {
                 $created++;
-
-                if ($pkiConfigured && $station->station_cert === null) {
-                    try {
-                        $certService->generateStationCert($station);
-                    } catch (\Throwable $e) {
-                        $this->command?->warn("Cert failed for {$stationId}: {$e->getMessage()}");
-                    }
-                }
             } else {
-                $skipped++;
+                $updated++;
+            }
+
+            if ($pkiConfigured && $station->station_cert === null) {
+                try {
+                    $certService->generateStationCert($station);
+                } catch (\Throwable $e) {
+                    $this->command?->warn("Cert failed for {$stationId}: {$e->getMessage()}");
+                }
             }
         }
 
-        $this->command?->info("Simulator stations: {$created} created, {$skipped} existing.");
+        $this->command?->info("Simulator stations: {$created} created, {$updated} updated.");
     }
 }
