@@ -36,12 +36,14 @@ final class TenantStation extends Model
         'firmware_version',
         'station_model',
         'station_vendor',
+        'force_boot_reject',
     ];
 
     protected function casts(): array
     {
         return [
             'is_connected' => 'boolean',
+            'force_boot_reject' => 'boolean',
             'last_connected_at' => 'datetime',
             'last_boot_at' => 'datetime',
             'mqtt_password_encrypted' => 'encrypted',

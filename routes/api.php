@@ -38,5 +38,9 @@ Route::prefix('v1')->middleware('auth:jwt')->group(function (): void {
     Route::post('conformance/reset', [ConformanceController::class, 'reset']);
     Route::get('conformance/{action}', [ConformanceController::class, 'show']);
 
+    Route::get('stations/{stationId}', [StationController::class, 'showById']);
+    Route::post('stations/{stationId}/force-reject', [StationController::class, 'forceReject']);
+    Route::delete('stations/{stationId}/force-reject', [StationController::class, 'clearForceReject']);
+
     Route::get('simulator/certificates', SimulatorCertificateController::class);
 });

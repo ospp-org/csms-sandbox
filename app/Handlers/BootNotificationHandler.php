@@ -31,6 +31,18 @@ final class BootNotificationHandler implements OsppHandler
             ]);
         }
 
+        // Simulator control: force reject for testing boot-rejected flow
+        if ($station->force_boot_reject) {
+            $station->update(['force_boot_reject' => false]);
+
+            return HandlerResult::responded([
+                'status' => 'Rejected',
+                'serverTime' => now()->format('Y-m-d\TH:i:s.v\Z'),
+                'heartbeatIntervalSec' => 30,
+                'retryInterval' => 10,
+            ]);
+        }
+
         $tenantVersion = $station->tenant->protocol_version
             ?? config('sandbox.default_protocol_version');
 

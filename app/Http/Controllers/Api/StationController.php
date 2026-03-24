@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Tenant;
+use App\Models\TenantStation;
 use App\Services\MqttCredentialService;
 use App\Services\StationStateService;
 use Illuminate\Http\JsonResponse;
@@ -100,6 +101,84 @@ final class StationController extends Controller
                 ? date('Y-m-d\TH:i:s.000\Z', $stationState->getLastHeartbeat($station->station_id))
                 : null,
             'bays' => $bayData,
+        ]);
+    }
+
+    public function showById(Request $request, string $stationId, StationStateService $stationState): JsonResponse
+    {
+        /** @var Tenant $tenant */
+        $tenant = $request->user();
+
+        $station = TenantStation::where('tenant_id', $tenant->id)
+            ->where('station_id', $stationId)
+            ->first();
+
+        if ($station === null) {
+            return new JsonResponse(['error' => 'NOT_FOUND', 'message' => "Station not found: {$stationId}"], 404);
+        }
+
+        $lifecycle = $stationState->getLifecycle($stationId);
+        $bays = $stationState->getAllBays($stationId);
+
+        $bayData = [];
+        foreach ($bays as $number => $bay) {
+            $bayData[] = [
+                'number' => $number,
+                'status' => $bay['status'],
+            ];
+        }
+
+        return new JsonResponse([
+            'station_id' => $station->station_id,
+            'protocol_version' => $station->protocol_version,
+            'bay_count' => $station->bay_count,
+            'is_connected' => $station->is_connected,
+            'lifecycle' => $lifecycle,
+            'bays' => $bayData,
+            'last_connected_at' => $station->last_connected_at?->toIso8601String(),
+            'last_boot_at' => $station->last_boot_at?->toIso8601String(),
+        ]);
+    }
+
+    public function forceReject(Request $request, string $stationId): JsonResponse
+    {
+        /** @var Tenant $tenant */
+        $tenant = $request->user();
+
+        $station = TenantStation::where('tenant_id', $tenant->id)
+            ->where('station_id', $stationId)
+            ->first();
+
+        if ($station === null) {
+            return new JsonResponse(['error' => 'NOT_FOUND', 'message' => "Station not found: {$stationId}"], 404);
+        }
+
+        $station->update(['force_boot_reject' => true]);
+
+        return new JsonResponse([
+            'message' => "Next BootNotification for {$stationId} will be Rejected.",
+            'station_id' => $stationId,
+        ]);
+    }
+
+    public function clearForceReject(Request $request, string $stationId): JsonResponse
+    {
+        /** @var Tenant $tenant */
+        $tenant = $request->user();
+
+        $station = TenantStation::where('tenant_id', $tenant->id)
+            ->where('station_id', $stationId)
+            ->first();
+
+        if ($station === null) {
+            return new JsonResponse(['error' => 'NOT_FOUND', 'message' => "Station not found: {$stationId}"], 404);
+        }
+
+        $station->update(['force_boot_reject' => false]);
+
+        return new JsonResponse([
+            'message' => "Force reject cleared for {$stationId}.",
+            'station_id' => $stationId,
         ]);
     }
 }
