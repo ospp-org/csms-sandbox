@@ -16,10 +16,18 @@ final class MqttAclController extends Controller
         $username = $request->input('username', '');
         $topic = $request->input('topic', '');
         $action = $request->input('action', '');
+        $cn = $request->input('cn', '');
 
         $station = TenantStation::where('mqtt_username', $username)->first();
 
         if ($station === null) {
+            return new JsonResponse(['result' => 'deny']);
+        }
+
+        // Defense-in-depth: if cert CN is present, it must match station_id.
+        // CN is empty for plain TCP (port 1883, dev only) — skip check.
+        // On TLS (port 8883), fail_if_no_peer_cert ensures CN is always present.
+        if ($cn !== '' && $cn !== $station->station_id) {
             return new JsonResponse(['result' => 'deny']);
         }
 

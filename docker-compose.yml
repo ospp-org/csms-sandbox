@@ -14,6 +14,7 @@ services:
         condition: service_healthy
     volumes:
       - ./.env:/var/www/html/.env:ro
+      - ./pki:/opt/pki:ro
 #      - .:/var/www/html
 #      - ./docker/php/php-dev.ini:/usr/local/etc/php/conf.d/99-dev.ini
     networks:
@@ -150,6 +151,7 @@ services:
       - ./docker/emqx/emqx.conf:/opt/emqx/etc/emqx.conf:ro
       - ./certs/fullchain.pem:/opt/emqx/etc/certs/fullchain.pem:ro
       - ./certs/privkey.pem:/opt/emqx/etc/certs/privkey.pem:ro
+      - ./pki:/opt/pki:ro
     ports:
       - "${MQTT_PORT:-1883}:1883"
       - "${MQTT_TLS_PORT:-8883}:8883"
