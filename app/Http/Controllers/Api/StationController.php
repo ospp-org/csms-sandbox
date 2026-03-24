@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Tenant;
 use App\Models\TenantStation;
+use App\Services\CommandService;
 use App\Services\MqttCredentialService;
 use App\Services\StationStateService;
 use Illuminate\Http\JsonResponse;
@@ -179,6 +180,90 @@ final class StationController extends Controller
         return new JsonResponse([
             'message' => "Force reject cleared for {$stationId}.",
             'station_id' => $stationId,
+        ]);
+    }
+
+    public function forcePending(Request $request, string $stationId): JsonResponse
+    {
+        /** @var Tenant $tenant */
+        $tenant = $request->user();
+
+        $station = TenantStation::where('tenant_id', $tenant->id)
+            ->where('station_id', $stationId)
+            ->first();
+
+        if ($station === null) {
+            return new JsonResponse(['error' => 'NOT_FOUND', 'message' => "Station not found: {$stationId}"], 404);
+        }
+
+        $retryInterval = (int) ($request->input('retry_interval', 30));
+
+        $station->update([
+            'force_boot_pending' => true,
+            'boot_retry_interval' => $retryInterval,
+        ]);
+
+        return new JsonResponse([
+            'message' => "Next BootNotification for {$stationId} will be Pending with retryInterval={$retryInterval}s.",
+            'station_id' => $stationId,
+        ]);
+    }
+
+    public function clearForcePending(Request $request, string $stationId): JsonResponse
+    {
+        /** @var Tenant $tenant */
+        $tenant = $request->user();
+
+        $station = TenantStation::where('tenant_id', $tenant->id)
+            ->where('station_id', $stationId)
+            ->first();
+
+        if ($station === null) {
+            return new JsonResponse(['error' => 'NOT_FOUND', 'message' => "Station not found: {$stationId}"], 404);
+        }
+
+        $station->update(['force_boot_pending' => false, 'boot_retry_interval' => null]);
+
+        return new JsonResponse([
+            'message' => "Force pending cleared for {$stationId}.",
+            'station_id' => $stationId,
+        ]);
+    }
+
+    public function triggerDataTransfer(Request $request, string $stationId, CommandService $commandService): JsonResponse
+    {
+        /** @var Tenant $tenant */
+        $tenant = $request->user();
+
+        $station = TenantStation::where('tenant_id', $tenant->id)
+            ->where('station_id', $stationId)
+            ->first();
+
+        if ($station === null) {
+            return new JsonResponse(['error' => 'NOT_FOUND', 'message' => "Station not found: {$stationId}"], 404);
+        }
+
+        $result = $commandService->send(
+            tenantId: $tenant->id,
+            action: 'DataTransfer',
+            parameters: [
+                'vendorId' => (string) $request->input('vendor_id', 'com.ospp.sandbox'),
+                'dataId' => (string) $request->input('data_id', 'ping'),
+                'data' => $request->input('data', new \stdClass()),
+            ],
+        );
+
+        if (! $result->success) {
+            return new JsonResponse([
+                'error' => $result->errorCode,
+                'message' => $result->errorText,
+            ], $result->errorCode === 'STATION_NOT_CONNECTED' ? 409 : 400);
+        }
+
+        return new JsonResponse([
+            'message' => 'DataTransfer sent.',
+            'station_id' => $stationId,
+            'message_id' => $result->messageId,
         ]);
     }
 }

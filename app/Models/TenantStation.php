@@ -37,6 +37,8 @@ final class TenantStation extends Model
         'station_model',
         'station_vendor',
         'force_boot_reject',
+        'force_boot_pending',
+        'boot_retry_interval',
     ];
 
     protected function casts(): array
@@ -44,6 +46,7 @@ final class TenantStation extends Model
         return [
             'is_connected' => 'boolean',
             'force_boot_reject' => 'boolean',
+            'force_boot_pending' => 'boolean',
             'last_connected_at' => 'datetime',
             'last_boot_at' => 'datetime',
             'mqtt_password_encrypted' => 'encrypted',

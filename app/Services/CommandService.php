@@ -17,6 +17,7 @@ final class CommandService
         'ChangeConfiguration', 'GetConfiguration', 'Reset', 'UpdateFirmware',
         'GetDiagnostics', 'SetMaintenanceMode', 'TriggerMessage',
         'UpdateServiceCatalog', 'CertificateInstall', 'TriggerCertificateRenewal',
+        'DataTransfer',
     ];
 
     public function __construct(

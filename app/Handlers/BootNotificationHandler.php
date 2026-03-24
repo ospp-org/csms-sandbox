@@ -43,6 +43,19 @@ final class BootNotificationHandler implements OsppHandler
             ]);
         }
 
+        // Simulator control: force pending for testing boot-pending flow
+        if ($station->force_boot_pending) {
+            $retryInterval = $station->boot_retry_interval ?? 30;
+            $station->update(['force_boot_pending' => false, 'boot_retry_interval' => null]);
+
+            return HandlerResult::responded([
+                'status' => 'Pending',
+                'serverTime' => now()->format('Y-m-d\TH:i:s.v\Z'),
+                'heartbeatIntervalSec' => 30,
+                'retryInterval' => $retryInterval,
+            ]);
+        }
+
         $tenantVersion = $station->tenant->protocol_version
             ?? config('sandbox.default_protocol_version');
 

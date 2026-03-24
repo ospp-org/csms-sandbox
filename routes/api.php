@@ -41,6 +41,9 @@ Route::prefix('v1')->middleware('auth:jwt')->group(function (): void {
     Route::get('stations/{stationId}', [StationController::class, 'showById']);
     Route::post('stations/{stationId}/force-reject', [StationController::class, 'forceReject']);
     Route::delete('stations/{stationId}/force-reject', [StationController::class, 'clearForceReject']);
+    Route::post('stations/{stationId}/force-pending', [StationController::class, 'forcePending']);
+    Route::delete('stations/{stationId}/force-pending', [StationController::class, 'clearForcePending']);
+    Route::post('stations/{stationId}/trigger-data-transfer', [StationController::class, 'triggerDataTransfer']);
 
     Route::get('simulator/certificates', SimulatorCertificateController::class);
 });
