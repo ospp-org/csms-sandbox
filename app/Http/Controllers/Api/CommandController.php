@@ -19,10 +19,13 @@ final class CommandController extends Controller
         /** @var Tenant $tenant */
         $tenant = $request->user();
 
+        $stationId = $request->query('station');
+
         $result = $commandService->send(
             tenantId: $tenant->id,
             action: $action,
-            parameters: $request->except(['_token', '_method']),
+            parameters: $request->except(['_token', '_method', 'station']),
+            stationId: is_string($stationId) ? $stationId : null,
         );
 
         if (! $result->success) {

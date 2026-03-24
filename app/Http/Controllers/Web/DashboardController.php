@@ -133,11 +133,13 @@ final class DashboardController extends Controller
     {
         /** @var Tenant $tenant */
         $tenant = $request->user();
+        $station = $this->resolveStation($request, $tenant);
 
         $result = $commandService->send(
             tenantId: $tenant->id,
             action: $action,
-            parameters: $request->except(['_token', '_method']),
+            parameters: $request->except(['_token', '_method', 'station']),
+            stationId: $station->station_id,
         );
 
         if (! $result->success) {

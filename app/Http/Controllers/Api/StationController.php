@@ -251,6 +251,7 @@ final class StationController extends Controller
                 'dataId' => (string) $request->input('data_id', 'ping'),
                 'data' => $request->input('data', new \stdClass()),
             ],
+            stationId: $stationId,
         );
 
         if (! $result->success) {

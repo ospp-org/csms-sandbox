@@ -30,13 +30,20 @@ final class CommandService
     /**
      * @param array<string, mixed> $parameters
      */
-    public function send(string $tenantId, string $action, array $parameters): CommandResult
+    public function send(string $tenantId, string $action, array $parameters = [], ?string $stationId = null): CommandResult
     {
         if (! in_array($action, self::VALID_ACTIONS, true)) {
             return CommandResult::error('INVALID_ACTION', "Unknown command action: {$action}");
         }
 
-        $station = TenantStation::where('tenant_id', $tenantId)->first();
+        if ($stationId !== null) {
+            $station = TenantStation::where('tenant_id', $tenantId)
+                ->where('station_id', $stationId)
+                ->first();
+        } else {
+            $station = TenantStation::where('tenant_id', $tenantId)->first();
+        }
+
         if ($station === null) {
             return CommandResult::error('NO_STATION', 'No station found for tenant');
         }
