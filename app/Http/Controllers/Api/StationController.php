@@ -230,41 +230,58 @@ final class StationController extends Controller
         ]);
     }
 
-    public function triggerDataTransfer(Request $request, string $stationId, CommandService $commandService): JsonResponse
+    public function triggerCommand(Request $request, string $stationId, CommandService $commandService): JsonResponse
     {
         /** @var Tenant $tenant */
         $tenant = $request->user();
 
-        $station = TenantStation::where('tenant_id', $tenant->id)
-            ->where('station_id', $stationId)
-            ->first();
+        $action = (string) $request->input('action', '');
+        /** @var array<string, mixed> $payload */
+        $payload = (array) $request->input('payload', []);
 
-        if ($station === null) {
-            return new JsonResponse(['error' => 'NOT_FOUND', 'message' => "Station not found: {$stationId}"], 404);
+        if ($action === '') {
+            return new JsonResponse(['error' => 'MISSING_ACTION', 'message' => 'action field is required'], 400);
         }
 
         $result = $commandService->send(
             tenantId: $tenant->id,
-            action: 'DataTransfer',
-            parameters: [
-                'vendorId' => (string) $request->input('vendor_id', 'com.ospp.sandbox'),
-                'dataId' => (string) $request->input('data_id', 'ping'),
-                'data' => $request->input('data', new \stdClass()),
-            ],
+            action: $action,
+            parameters: $payload,
             stationId: $stationId,
         );
 
         if (! $result->success) {
+            $status = match ($result->errorCode) {
+                'STATION_NOT_CONNECTED' => 409,
+                'NO_STATION' => 404,
+                default => 400,
+            };
+
             return new JsonResponse([
                 'error' => $result->errorCode,
                 'message' => $result->errorText,
-            ], $result->errorCode === 'STATION_NOT_CONNECTED' ? 409 : 400);
+            ], $status);
         }
 
         return new JsonResponse([
-            'message' => 'DataTransfer sent.',
+            'message' => 'Command sent.',
             'station_id' => $stationId,
+            'action' => $action,
             'message_id' => $result->messageId,
         ]);
+    }
+
+    public function triggerDataTransfer(Request $request, string $stationId, CommandService $commandService): JsonResponse
+    {
+        $request->merge([
+            'action' => 'DataTransfer',
+            'payload' => [
+                'vendorId' => (string) $request->input('vendor_id', 'com.ospp.sandbox'),
+                'dataId' => (string) $request->input('data_id', 'ping'),
+                'data' => $request->input('data', new \stdClass()),
+            ],
+        ]);
+
+        return $this->triggerCommand($request, $stationId, $commandService);
     }
 }
