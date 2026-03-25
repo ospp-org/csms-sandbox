@@ -7,8 +7,8 @@ The CSMS Sandbox evaluates station protocol conformance against the [OSPP Specif
 1. Station sends MQTT message → EMQX webhook → Laravel queue
 2. **Schema validation**: Payload validated against SDK JSON Schema (ospp/protocol)
 3. **Behavior rules**: 14 rules check protocol-level compliance
-4. **Result recorded**: Per-action status saved to database
-5. **Report generated**: Aggregated scores by category
+4. **Result recorded**: Per-station, per-action status saved to database
+5. **Report generated**: Aggregated scores by category per station
 
 ## Scoring
 
@@ -21,12 +21,16 @@ The CSMS Sandbox evaluates station protocol conformance against the [OSPP Specif
 
 **Score calculation:** `passed / (passed + failed + partial) × 100%`
 
-## 26 Tracked Actions
+## Per-Station Tracking
+
+Conformance is tracked **per station**, not per tenant. Each station has its own conformance report with independent pass/fail status. Use `?station=stn_00000001` query parameter on API endpoints, or the station selector dropdown in the dashboard.
+
+## 27 Tracked Actions
 
 | Category | Actions |
 |----------|---------|
 | Core | BootNotification, Heartbeat, StatusNotification, DataTransfer |
-| Sessions | MeterValues, StartService, StopService |
+| Sessions | MeterValues, StartService, StopService, SessionEnded |
 | Reservations | ReserveBay, CancelReservation |
 | Device Management | ChangeConfiguration, GetConfiguration, Reset, UpdateFirmware, GetDiagnostics, SetMaintenanceMode, TriggerMessage, UpdateServiceCatalog |
 | Offline | AuthorizeOfflinePass, TransactionEvent |

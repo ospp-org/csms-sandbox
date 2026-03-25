@@ -221,6 +221,36 @@ https://github.com/ospp-org/spec/tree/main/examples/flows
 }
 ```
 
+### 8. SessionEnded (Timer Expiry — no StopService)
+
+When the session timer expires, the station auto-stops and sends SessionEnded EVENT (not StopService Response):
+
+```json
+// Station -> CSMS (Event — no response expected)
+{
+  "action": "SessionEnded",
+  "messageId": "msg_se_001",
+  "messageType": "Event",
+  "source": "Station",
+  "protocolVersion": "0.2.1",
+  "timestamp": "2026-03-16T10:10:00.000Z",
+  "payload": {
+    "sessionId": "sess_a1b2c3d4e5f6",
+    "bayId": "bay_00000001",
+    "reason": "TimerExpired",
+    "actualDurationSeconds": 300,
+    "creditsCharged": 100,
+    "meterValues": {
+      "liquidMl": 5000,
+      "consumableMl": 500,
+      "energyWh": 250
+    }
+  }
+}
+```
+
+`reason` values: `TimerExpired` (normal), `Fault` (hardware error). Always followed by StatusNotification (Finishing→Available or Faulted).
+
 ## b) Firmware Update Flow
 
 ```json

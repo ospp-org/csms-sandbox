@@ -30,7 +30,26 @@ You'll receive:
 - `mqtt_host`: csms-sandbox.ospp-standard.org
 - `mqtt_port`: 8883 (TLS) or 1883 (plain)
 
-## 3. Connect via MQTT
+## 3. Download Certificates (mTLS)
+
+Port 8883 requires a client certificate (mTLS). Download from the **Setup** page or via API:
+
+```bash
+# Bulk download all station certificates
+curl -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  https://csms-sandbox.ospp-standard.org/api/v1/simulator/certificates \
+  -o certs.json
+
+# Or download individually from dashboard:
+# Setup page → Station Certificate → Download CA / Certificate / Private Key
+```
+
+You'll need 3 files per station:
+- `ca.pem` — CA chain (same for all stations)
+- `station.pem` — station client certificate
+- `station-key.pem` — station private key
+
+## 4. Connect via MQTT (with mTLS)
 
 ### Python (paho-mqtt)
 
@@ -41,7 +60,11 @@ import json, time
 STATION_ID = "stn_a1b2c3d4"
 client = mqtt.Client()
 client.username_pw_set(STATION_ID, "your_mqtt_password")
-client.tls_set()  # TLS on port 8883
+client.tls_set(
+    ca_certs="ca.pem",
+    certfile="station.pem",
+    keyfile="station-key.pem",
+)
 client.connect("csms-sandbox.ospp-standard.org", 8883)
 
 # Subscribe to commands from CSMS
@@ -53,10 +76,14 @@ client.loop_start()
 
 ```javascript
 const mqtt = require('mqtt');
+const fs = require('fs');
 const STATION_ID = 'stn_a1b2c3d4';
 const client = mqtt.connect('mqtts://csms-sandbox.ospp-standard.org:8883', {
   username: STATION_ID,
   password: 'your_mqtt_password',
+  ca: fs.readFileSync('ca.pem'),
+  cert: fs.readFileSync('station.pem'),
+  key: fs.readFileSync('station-key.pem'),
 });
 client.subscribe(`ospp/v1/stations/${STATION_ID}/to-station`);
 ```
@@ -65,11 +92,11 @@ client.subscribe(`ospp/v1/stations/${STATION_ID}/to-station`);
 
 ```c
 mosquitto_username_pw_set(mosq, "stn_a1b2c3d4", "your_mqtt_password");
-mosquitto_tls_set(mosq, "/path/to/ca.pem", NULL, NULL, NULL, NULL);
+mosquitto_tls_set(mosq, "ca.pem", NULL, "station.pem", "station-key.pem", NULL);
 mosquitto_connect(mosq, "csms-sandbox.ospp-standard.org", 8883, 60);
 ```
 
-## 4. Boot Notification (First Message)
+## 5. Boot Notification (First Message)
 
 Every station MUST send BootNotification as its first message:
 
@@ -118,7 +145,7 @@ Expected response on `to-station` topic:
 }
 ```
 
-## 5. Send Heartbeats
+## 6. Send Heartbeats
 
 After boot, send heartbeats at the interval specified:
 
@@ -135,7 +162,7 @@ heartbeat = {
 client.publish(f"ospp/v1/stations/{STATION_ID}/to-server", json.dumps(heartbeat))
 ```
 
-## 6. Report Bay Status
+## 7. Report Bay Status
 
 Report each bay's status after boot:
 
@@ -158,7 +185,7 @@ status = {
 
 Events don't receive a response.
 
-## 7. Handle Commands
+## 8. Handle Commands
 
 Subscribe to `to-station` topic. The CSMS sends commands like StartService:
 
@@ -184,14 +211,14 @@ def on_message(client, userdata, msg):
         )
 ```
 
-## 8. Monitor in Dashboard
+## 9. Monitor in Dashboard
 
 - **Live Monitor**: See every message in real-time (WebSocket)
 - **Commands**: Send commands from the UI, see schemas
 - **History**: Search and filter past messages
 - **Conformance**: See your protocol compliance score
 
-## 9. Check Conformance
+## 10. Check Conformance
 
 Visit the **Conformance** page to see:
 - Per-action pass/fail status
@@ -201,7 +228,7 @@ Visit the **Conformance** page to see:
 
 Export as PDF or JSON for your records.
 
-## 10. Common Issues
+## 11. Common Issues
 
 | Issue | Cause | Fix |
 |-------|-------|-----|

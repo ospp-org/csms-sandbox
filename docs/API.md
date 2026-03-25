@@ -250,16 +250,20 @@ Get JSON Schema for a command's request payload.
 
 ## Conformance Endpoints
 
+All conformance endpoints accept `?station={stationId}` query parameter to scope results to a specific station. Defaults to tenant's first station.
+
 ### GET /conformance
 
-Full conformance report.
+Full conformance report for a station.
 
 **Auth:** JWT Bearer
+**Query:** `?station=stn_00000001` (optional)
 
 **Response (200):**
 ```json
 {
-  "protocol_version": "0.1.0",
+  "station_id": "stn_00000001",
+  "protocol_version": "0.2.1",
   "score": {
     "passed": 15,
     "failed": 2,
@@ -301,7 +305,7 @@ Reset all conformance results to "not_tested".
 
 **Response (200):**
 ```json
-{"message": "Conformance results reset", "actions_reset": 26}
+{"message": "Conformance results reset", "actions_reset": 27}
 ```
 
 ### GET /conformance/export/pdf
@@ -317,6 +321,111 @@ Download JSON conformance report.
 
 **Auth:** JWT Bearer
 **Content-Type:** application/json
+
+---
+
+## Station Control Endpoints (Simulator)
+
+### GET /stations/{stationId}
+
+Get current state of a specific station.
+
+**Auth:** JWT Bearer
+
+**Response (200):**
+```json
+{
+  "station_id": "stn_00000001",
+  "protocol_version": "0.2.1",
+  "bay_count": 2,
+  "is_connected": true,
+  "lifecycle": "online",
+  "bays": [
+    {"number": 1, "status": "Available"},
+    {"number": 2, "status": "Unknown"}
+  ],
+  "last_connected_at": "2026-03-24T10:00:00.000Z",
+  "last_boot_at": "2026-03-24T10:00:00.000Z"
+}
+```
+
+**Errors:** `404` if station doesn't belong to authenticated tenant.
+
+### POST /stations/{stationId}/force-reject
+
+Force next BootNotification to return Rejected. Flag auto-clears after use.
+
+**Auth:** JWT Bearer
+
+### DELETE /stations/{stationId}/force-reject
+
+Clear force-reject flag manually.
+
+### POST /stations/{stationId}/force-pending
+
+Force next BootNotification to return Pending.
+
+**Auth:** JWT Bearer
+**Body (optional):** `{"retry_interval": 10}` (default 30)
+
+### DELETE /stations/{stationId}/force-pending
+
+Clear force-pending flag manually.
+
+### POST /stations/{stationId}/trigger-command
+
+Send any OSPP command to the station via MQTT.
+
+**Auth:** JWT Bearer
+
+**Request:**
+```json
+{
+  "action": "Reset",
+  "payload": {"type": "Soft"}
+}
+```
+
+**Response (200):**
+```json
+{
+  "message": "Command sent.",
+  "station_id": "stn_00000001",
+  "action": "Reset",
+  "message_id": "msg_a1b2c3d4..."
+}
+```
+
+**Errors:**
+- `400`: Invalid or missing action
+- `404`: Station not found for tenant
+- `409`: Station not connected
+
+### POST /stations/{stationId}/trigger-data-transfer
+
+Shortcut for DataTransfer command.
+
+**Body (optional):** `{"vendor_id": "com.test", "data_id": "ping", "data": {}}`
+
+### GET /simulator/certificates
+
+Bulk download all station certificates for simulator testing.
+
+**Auth:** JWT Bearer
+
+**Response (200):**
+```json
+{
+  "sandbox_deviation": "Private keys are server-generated for testing only...",
+  "ca": "<CA chain PEM>",
+  "stations": {
+    "stn_00000001": {"cert": "<PEM>", "key": "<PEM>"},
+    "stn_00000002": {"cert": "<PEM>", "key": "<PEM>"}
+  }
+}
+```
+
+Only returns stations with generated certificates belonging to the authenticated tenant.
 
 ---
 

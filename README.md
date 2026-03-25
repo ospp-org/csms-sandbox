@@ -9,11 +9,15 @@ Multi-tenant OSPP protocol testing environment. Firmware developers connect thei
 
 ## Features
 
-- 26 OSPP protocol handlers with JSON Schema validation (ospp/protocol SDK)
-- Multi-tenant MQTT isolation (per-tenant credentials + EMQX ACL)
+- 27 OSPP protocol handlers with JSON Schema validation (ospp/protocol SDK v0.3.2)
+- mTLS enforcement on port 8883 (ECDSA P-256 client certificates)
+- Per-station conformance tracking with station selector UI
+- Multi-tenant MQTT isolation (per-tenant credentials + EMQX ACL + CN-based topic enforcement)
 - Real-time message inspector via WebSocket (Laravel Reverb)
 - 14 outbound command sender with schema-aware form builder
 - 14 conformance behavior rules with per-action OSPP spec timeouts
+- Simulator control API (force-reject, force-pending, trigger-command)
+- Bulk certificate export for simulator testing
 - PDF/JSON conformance report export
 - REST API with JWT (ES256) authentication
 - Connection code snippets: C (ESP-IDF), Python, JavaScript
@@ -74,7 +78,7 @@ Visit http://localhost / Login: dev@ospp-standard.org / password
 | [Deployment](docs/DEPLOYMENT.md) | Production setup on VPS |
 | [Architecture](docs/ARCHITECTURE.md) | System design, Docker services |
 | [MQTT](docs/MQTT.md) | Topic structure, ACL, webhook pipeline |
-| [Handlers](docs/HANDLERS.md) | 26 OSPP action handlers |
+| [Handlers](docs/HANDLERS.md) | 27 OSPP action handlers |
 
 ## MQTT Topics
 
@@ -110,15 +114,40 @@ ospp/v1/stations/{station_id}/to-station   # CSMS -> Station (subscribe)
 docker compose exec app php vendor/bin/pest --parallel --processes=28
 ```
 
-259 tests / 752 assertions / PHPStan level 6
+308 tests / 921 assertions / PHPStan level 6
+
+## mTLS (Client Certificates)
+
+Port 8883 requires mTLS — stations must present an ECDSA P-256 client certificate signed by the sandbox Station CA.
+
+- Certificates are auto-generated on station registration (when PKI is configured)
+- Download from dashboard Setup page or via `GET /api/v1/simulator/certificates` (bulk)
+- CN must match station_id (e.g., `stn_00000001`)
+- Port 1883 (plain TCP) available for development only — no client cert required
+
+**PKI environment variables:**
+```
+PKI_STATION_CA_CERT=/opt/pki/station-ca/station-ca.pem
+PKI_STATION_CA_KEY=/opt/pki/station-ca/station-ca.key
+PKI_CA_CHAIN=/opt/pki/station-ca/chain.pem
+```
+
+Generate missing certificates: `php artisan certificates:generate-missing`
 
 ## Station Simulator
 
-The [OSPP Station Simulator](https://github.com/ospp-org/station-simulator) uses MQTT 3.1.1 (php-mqtt/client limitation). OSPP spec requires MQTT 5.0. Transport-level features (Will Delay, Session Expiry) are unavailable in simulator testing. All 26 protocol actions are fully testable.
+The [OSPP Station Simulator](https://github.com/ospp-org/station-simulator) uses MQTT 3.1.1 (php-mqtt/client limitation). OSPP spec requires MQTT 5.0. Transport-level features (Will Delay, Session Expiry) are unavailable in simulator testing. All 27 protocol actions are fully testable.
+
+**Simulator control API:**
+- `POST /api/v1/stations/{id}/force-reject` — force next boot to Rejected
+- `POST /api/v1/stations/{id}/force-pending` — force next boot to Pending
+- `POST /api/v1/stations/{id}/trigger-command` — send any command to station
+- `GET /api/v1/simulator/certificates` — bulk download all station certs
 
 ## Security
 
-- Multi-tenant MQTT ACL isolation (EMQX HTTP backends)
+- mTLS on port 8883 (ECDSA P-256 client certs, CN-based ACL)
+- Multi-tenant MQTT ACL isolation (EMQX HTTP backends + cert CN verification)
 - JWT ES256 authentication with 1-hour TTL
 - Session cookies: Secure, HttpOnly, SameSite=Lax
 - Rate limiting on auth endpoints (5/min per IP)
@@ -126,6 +155,7 @@ The [OSPP Station Simulator](https://github.com/ospp-org/station-simulator) uses
 - No hardcoded secrets (empty fallbacks, fail-loud)
 - CSRF protection on all web forms
 - Nginx IP restriction on internal endpoints
+- API routes return 401 JSON for unauthenticated requests (no redirect)
 
 ## Known Limitations
 

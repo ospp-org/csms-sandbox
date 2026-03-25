@@ -81,6 +81,42 @@ Run migrations:
 docker compose exec app php artisan migrate --force
 ```
 
+## 4.1 PKI Setup (mTLS)
+
+Create the PKI directory structure:
+
+```bash
+mkdir -p pki/station-ca
+```
+
+Generate a Station CA (or use your existing one):
+```bash
+# Generate Station CA key
+openssl ecparam -genkey -name prime256v1 -noout -out pki/station-ca/station-ca.key
+
+# Generate Station CA certificate (self-signed, 5 years)
+openssl req -new -x509 -key pki/station-ca/station-ca.key \
+  -out pki/station-ca/station-ca.pem -days 1825 \
+  -subj "/CN=OSPP Sandbox Station CA"
+
+# Create chain file (Station CA only for sandbox)
+cp pki/station-ca/station-ca.pem pki/station-ca/chain.pem
+```
+
+Add to `.env`:
+```
+PKI_STATION_CA_CERT=/opt/pki/station-ca/station-ca.pem
+PKI_STATION_CA_KEY=/opt/pki/station-ca/station-ca.key
+PKI_CA_CHAIN=/opt/pki/station-ca/chain.pem
+```
+
+Generate certificates for all stations:
+```bash
+docker compose exec app php artisan certificates:generate-missing
+```
+
+EMQX is configured for mTLS automatically — `docker/emqx/emqx.conf` has `verify_peer` and `cacertfile` pointing to `/opt/pki/station-ca/chain.pem`.
+
 ## 5. Nginx Reverse Proxy
 
 Install nginx on the host (outside Docker) for TLS termination:
