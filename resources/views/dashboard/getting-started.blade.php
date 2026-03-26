@@ -26,10 +26,10 @@
                 <label class="text-gray-500">MQTT Username</label>
                 <p class="font-mono">{{ $station->mqtt_username }}</p>
             </div>
-            <div x-data='{ show: false, pwd: @json($mqttPassword) }'>
+            <div x-data="{ show: false }" data-pwd="{{ $mqttPassword }}">
                 <label class="text-gray-500">MQTT Password</label>
                 <div class="flex items-center space-x-2">
-                    <p class="font-mono" x-text="show ? pwd : '********'"></p>
+                    <p class="font-mono" x-text="show ? $root.dataset.pwd : '********'"></p>
                     <button @click="show = !show" class="text-xs text-ospp-600 hover:underline" x-text="show ? 'Hide' : 'Show'"></button>
                 </div>
             </div>
