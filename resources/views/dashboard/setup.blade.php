@@ -28,10 +28,10 @@
                 <label class="text-sm text-gray-500">Username</label>
                 <p class="font-mono text-sm">{{ $station->mqtt_username }}</p>
             </div>
-            <div x-data="{ show: false }">
+            <div x-data="{ show: false, pwd: {!! json_encode($mqttPassword) !!} }">
                 <label class="text-sm text-gray-500">Password</label>
                 <div class="flex items-center space-x-2">
-                    <p class="font-mono text-sm" x-text="show ? '{{ $mqttPassword }}' : '********'"></p>
+                    <p class="font-mono text-sm" x-text="show ? pwd : '********'"></p>
                     <button @click="show = !show" class="text-xs text-ospp-600 hover:underline" x-text="show ? 'Hide' : 'Show'"></button>
                 </div>
             </div>

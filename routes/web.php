@@ -31,6 +31,7 @@ Route::prefix('dashboard')->middleware('auth')->group(function (): void {
 });
 
 Route::prefix('dashboard')->middleware(['auth', 'ensure-station'])->group(function (): void {
+    Route::get('getting-started', [DashboardController::class, 'gettingStarted'])->name('dashboard.getting-started');
     Route::get('setup', [DashboardController::class, 'setup'])->name('dashboard.setup');
     Route::get('monitor', [DashboardController::class, 'monitor'])->name('dashboard.monitor');
     Route::get('commands', [DashboardController::class, 'commands'])->name('dashboard.commands');

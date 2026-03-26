@@ -31,7 +31,7 @@ final class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
-            return redirect()->intended('/dashboard/setup');
+            return redirect()->intended('/dashboard/getting-started');
         }
 
         return back()->withErrors(['email' => 'Invalid credentials.'])->onlyInput('email');
@@ -73,7 +73,7 @@ final class AuthController extends Controller
 
         Auth::login($tenant);
 
-        return redirect('/dashboard/setup');
+        return redirect('/dashboard/getting-started');
     }
 
     public function logout(Request $request): RedirectResponse

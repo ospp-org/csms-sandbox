@@ -6,6 +6,7 @@
     </div>
 
     <nav class="flex-1 p-4 space-y-1">
+        <a href="/dashboard/getting-started" class="flex items-center px-3 py-2 rounded-lg text-sm {{ request()->is('dashboard/getting-started') ? 'bg-ospp-50 text-ospp-700 font-medium' : 'text-gray-600 hover:bg-gray-50' }}">Getting Started</a>
         <a href="/dashboard/setup" class="flex items-center px-3 py-2 rounded-lg text-sm {{ request()->is('dashboard/setup') ? 'bg-ospp-50 text-ospp-700 font-medium' : 'text-gray-600 hover:bg-gray-50' }}">Setup</a>
         <a href="/dashboard/monitor" class="flex items-center px-3 py-2 rounded-lg text-sm {{ request()->is('dashboard/monitor') ? 'bg-ospp-50 text-ospp-700 font-medium' : 'text-gray-600 hover:bg-gray-50' }}">Live Monitor</a>
         <a href="/dashboard/commands" class="flex items-center px-3 py-2 rounded-lg text-sm {{ request()->is('dashboard/commands') ? 'bg-ospp-50 text-ospp-700 font-medium' : 'text-gray-600 hover:bg-gray-50' }}">Command Center</a>

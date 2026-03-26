@@ -21,7 +21,7 @@ test('user can register and is redirected to setup', function (): void {
         'password_confirmation' => 'password123',
     ]);
 
-    $response->assertRedirect('/dashboard/setup');
+    $response->assertRedirect('/dashboard/getting-started');
     $this->assertAuthenticated();
     $this->assertDatabaseHas('tenants', ['email' => 'test-web@example.com']);
 });
@@ -35,7 +35,7 @@ test('user can login with valid credentials', function (): void {
         'password' => 'password123',
     ]);
 
-    $response->assertRedirect('/dashboard/setup');
+    $response->assertRedirect('/dashboard/getting-started');
     $this->assertAuthenticatedAs($tenant);
 });
 

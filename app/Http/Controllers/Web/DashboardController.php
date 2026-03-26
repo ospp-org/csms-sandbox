@@ -23,6 +23,17 @@ use Illuminate\View\View;
 final class DashboardController extends Controller
 {
     use ResolvesStation;
+
+    public function gettingStarted(Request $request, MqttCredentialService $mqttCredentials): View
+    {
+        /** @var Tenant $tenant */
+        $tenant = $request->user();
+        $station = $this->resolveStationOrFail($request, $tenant);
+        $mqttPassword = $mqttCredentials->getPlainPassword($station);
+
+        return view('dashboard.getting-started', compact('tenant', 'station', 'mqttPassword'));
+    }
+
     public function setup(Request $request, MqttCredentialService $mqttCredentials): View
     {
         /** @var Tenant $tenant */
