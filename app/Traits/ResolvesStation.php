@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 
 trait ResolvesStation
 {
-    private function resolveStation(Request $request, Tenant $tenant): TenantStation
+    private function resolveStation(Request $request, Tenant $tenant): ?TenantStation
     {
         $stationId = $request->query('station');
 
@@ -25,5 +25,16 @@ trait ResolvesStation
         }
 
         return $tenant->station;
+    }
+
+    private function resolveStationOrFail(Request $request, Tenant $tenant): TenantStation
+    {
+        $station = $this->resolveStation($request, $tenant);
+
+        if ($station === null) {
+            abort(404, 'No station configured. Please contact support.');
+        }
+
+        return $station;
     }
 }

@@ -28,7 +28,7 @@ final class DashboardController extends Controller
         /** @var Tenant $tenant */
         $tenant = $request->user();
         $stations = $tenant->stations()->orderBy('station_id')->get();
-        $station = $this->resolveStation($request, $tenant);
+        $station = $this->resolveStationOrFail($request, $tenant);
         $mqttPassword = $mqttCredentials->getPlainPassword($station);
 
         return view('dashboard.setup', compact('tenant', 'stations', 'station', 'mqttPassword'));
@@ -57,7 +57,7 @@ final class DashboardController extends Controller
         /** @var Tenant $tenant */
         $tenant = $request->user();
         $stations = TenantStation::where('tenant_id', $tenant->id)->orderBy('station_id')->get();
-        $selectedStation = $this->resolveStation($request, $tenant);
+        $selectedStation = $this->resolveStationOrFail($request, $tenant);
         $version = $tenant->protocol_version ?? config('sandbox.default_protocol_version');
         $report = $conformance->getReport($selectedStation->station_id, $version);
 
@@ -133,7 +133,7 @@ final class DashboardController extends Controller
     {
         /** @var Tenant $tenant */
         $tenant = $request->user();
-        $station = $this->resolveStation($request, $tenant);
+        $station = $this->resolveStationOrFail($request, $tenant);
 
         $result = $commandService->send(
             tenantId: $tenant->id,
@@ -180,7 +180,7 @@ final class DashboardController extends Controller
     {
         /** @var Tenant $tenant */
         $tenant = $request->user();
-        $station = $this->resolveStation($request, $tenant);
+        $station = $this->resolveStationOrFail($request, $tenant);
         $version = $tenant->protocol_version ?? config('sandbox.default_protocol_version');
 
         $report = $conformance->getReport($station->station_id, $version);
@@ -196,7 +196,7 @@ final class DashboardController extends Controller
     {
         /** @var Tenant $tenant */
         $tenant = $request->user();
-        $station = $this->resolveStation($request, $tenant);
+        $station = $this->resolveStationOrFail($request, $tenant);
         $version = $tenant->protocol_version ?? config('sandbox.default_protocol_version');
 
         $report = $conformance->getReport($station->station_id, $version);
@@ -212,7 +212,7 @@ final class DashboardController extends Controller
     {
         /** @var Tenant $tenant */
         $tenant = $request->user();
-        $station = $this->resolveStation($request, $tenant);
+        $station = $this->resolveStationOrFail($request, $tenant);
         $version = $tenant->protocol_version ?? config('sandbox.default_protocol_version');
 
         $conformance->reset($station->station_id, $version);

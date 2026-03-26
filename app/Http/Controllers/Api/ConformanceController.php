@@ -23,7 +23,7 @@ final class ConformanceController extends Controller
     {
         /** @var Tenant $tenant */
         $tenant = $request->user();
-        $station = $this->resolveStation($request, $tenant);
+        $station = $this->resolveStationOrFail($request, $tenant);
         $version = $tenant->protocol_version ?? config('sandbox.default_protocol_version');
 
         $report = $conformance->getReport($station->station_id, $version);
@@ -48,7 +48,7 @@ final class ConformanceController extends Controller
     {
         /** @var Tenant $tenant */
         $tenant = $request->user();
-        $station = $this->resolveStation($request, $tenant);
+        $station = $this->resolveStationOrFail($request, $tenant);
         $version = $tenant->protocol_version ?? config('sandbox.default_protocol_version');
 
         $result = $conformance->getActionDetail($station->station_id, $version, $action);
@@ -64,7 +64,7 @@ final class ConformanceController extends Controller
     {
         /** @var Tenant $tenant */
         $tenant = $request->user();
-        $station = $this->resolveStation($request, $tenant);
+        $station = $this->resolveStationOrFail($request, $tenant);
         $version = $tenant->protocol_version ?? config('sandbox.default_protocol_version');
 
         $count = $conformance->reset($station->station_id, $version);
@@ -79,7 +79,7 @@ final class ConformanceController extends Controller
     {
         /** @var Tenant $tenant */
         $tenant = $request->user();
-        $station = $this->resolveStation($request, $tenant);
+        $station = $this->resolveStationOrFail($request, $tenant);
         $version = $tenant->protocol_version ?? config('sandbox.default_protocol_version');
 
         $report = $conformance->getReport($station->station_id, $version);
@@ -95,7 +95,7 @@ final class ConformanceController extends Controller
     {
         /** @var Tenant $tenant */
         $tenant = $request->user();
-        $station = $this->resolveStation($request, $tenant);
+        $station = $this->resolveStationOrFail($request, $tenant);
         $version = $tenant->protocol_version ?? config('sandbox.default_protocol_version');
 
         $report = $conformance->getReport($station->station_id, $version);

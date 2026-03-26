@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'verify-emqx' => \App\Http\Middleware\VerifyEmqxWebhook::class,
+            'ensure-station' => \App\Http\Middleware\EnsureStationExists::class,
         ]);
 
         $middleware->validateCsrfTokens(except: [

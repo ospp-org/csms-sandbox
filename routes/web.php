@@ -27,6 +27,10 @@ Route::post('logout', [AuthController::class, 'logout'])->middleware('auth')->na
 
 // Dashboard (auth required)
 Route::prefix('dashboard')->middleware('auth')->group(function (): void {
+    Route::get('no-station', fn () => view('dashboard.no-station'))->name('dashboard.no-station');
+});
+
+Route::prefix('dashboard')->middleware(['auth', 'ensure-station'])->group(function (): void {
     Route::get('setup', [DashboardController::class, 'setup'])->name('dashboard.setup');
     Route::get('monitor', [DashboardController::class, 'monitor'])->name('dashboard.monitor');
     Route::get('commands', [DashboardController::class, 'commands'])->name('dashboard.commands');
