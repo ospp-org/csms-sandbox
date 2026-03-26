@@ -26,7 +26,7 @@
                 <label class="text-gray-500">MQTT Username</label>
                 <p class="font-mono">{{ $station->mqtt_username }}</p>
             </div>
-            <div x-data="{ show: false, pwd: {!! json_encode($mqttPassword) !!} }">
+            <div x-data='{ show: false, pwd: @json($mqttPassword) }'>
                 <label class="text-gray-500">MQTT Password</label>
                 <div class="flex items-center space-x-2">
                     <p class="font-mono" x-text="show ? pwd : '********'"></p>
